@@ -1,0 +1,454 @@
+{
+ "ported_from": "The Clearing web app, branch clearing-tester-1",
+ "method_version": "Clearing editorial methods 1",
+ "paths": [
+  {
+   "id": "true-nonfiction",
+   "title": "Shape true nonfiction",
+   "detail": "Work directly on openings, detail, people, dialogue, point of view, character, structure, research, or a special technique.",
+   "influences": [
+    "Reported scenes",
+    "Narrative structure"
+   ],
+   "focuses": [
+    {
+     "id": "true-nonfiction:1",
+     "group": "Start here",
+     "title": "Diagnose the nonfiction craft",
+     "detail": "Test the whole piece and find the one craft decision that matters now.",
+     "prompt": "Diagnose this source-grounded narrative nonfiction across dramatic and summary opening, realistic detail, scene, group and individual life, captured speech and documentary material, angle and point of view, characterization, structure, compression, research, and ethical disclosure. Identify the single highest-value craft move, explain why it outranks the others, show exactly where it applies, then use the available editorial methods. Ask for missing evidence instead of inventing it.",
+     "aliases": ""
+    },
+    {
+     "id": "true-nonfiction:2",
+     "group": "Openings",
+     "title": "Open dramatically",
+     "detail": "Begin inside a supported scene so the reader witnesses action rather than receiving a report.",
+     "prompt": "Test a dramatic opening for this source-grounded nonfiction. Put the reader inside one supported scene using action, setting, people, and captured or honestly reconstructed speech where available. Identify the scene's immediate question and the minimum orientation the reader needs. Compare up to three materially different entrances only when the evidence supports them. Use the editorial judgment this room allows. Do not manufacture action, dialogue, weather, objects, or suspense.",
+     "aliases": "begin beginning intro introduction lead lede scene witness action dramatic"
+    },
+    {
+     "id": "true-nonfiction:3",
+     "group": "Openings",
+     "title": "Open with descriptive summary",
+     "detail": "Compress context through a sensory impression that moves through space.",
+     "prompt": "Test a descriptive-summary opening for this source-grounded nonfiction. Create an overall sensory or visual impression from supported particulars, moving the reader through the relevant place, people, or conditions without pretending a narrated scene is unfolding in real time. Explain what this opening establishes and what it postpones. Use the editorial judgment this room allows. Do not add plausible scenery or sensory detail.",
+     "aliases": "description descriptive sensory visual space opening"
+    },
+    {
+     "id": "true-nonfiction:4",
+     "group": "Openings",
+     "title": "Open with explanatory summary",
+     "detail": "Compress sequence, logic, or meaning so the reader can move through time quickly.",
+     "prompt": "Test an explanatory-summary opening for this source-grounded nonfiction. Orient the reader through supported sequence, causation, context, or consequence, moving efficiently through time while retaining a human stake and a live question. Show where explanation should give way to scene or descriptive summary. Use the editorial judgment this room allows. Keep causal claims proportional to the evidence.",
+     "aliases": "explanation explanatory context sequence logic cause causation time background opening"
+    },
+    {
+     "id": "true-nonfiction:5",
+     "group": "Detail & scene",
+     "title": "Build authority with selected detail",
+     "detail": "Choose the few particulars that establish knowledge, meaning, and presence.",
+     "prompt": "Help me build authority through realistic detail. Inventory the particulars supported by observation, memory, interview, document, or named source; select the single detail or cumulative set that best reveals the essence of the person, place, group, or event; and identify details that are merely decorative, misleadingly precise, or likely to date badly. Name the missing detail worth reporting. Use the editorial judgment this room allows. Plausibility is not evidence.",
+     "aliases": "specific concrete credible credibility particulars realistic detail authority"
+    },
+    {
+     "id": "true-nonfiction:6",
+     "group": "Detail & scene",
+     "title": "Build and connect scenes",
+     "detail": "Use scenes as the dramatic blocks and summary as the connective tissue.",
+     "prompt": "Map this true piece as scenes connected by summary. For each candidate scene, identify place, time, people, action, speech or thought, turn, and purpose; choose only events with real dramatic or explanatory value; and mark where summary should bridge time or supply context. Use the editorial judgment this room allows. Do not inflate an anecdote into a scene when the supplied evidence cannot support one.",
+     "aliases": "scene scenes bridge summary dramatic blocks"
+    },
+    {
+     "id": "true-nonfiction:7",
+     "group": "People",
+     "title": "Reveal group life",
+     "detail": "Show a group through patterns, rituals, signals, pressure, and exceptions.",
+     "prompt": "Render group life in this true piece through supported concrete detail. Look for roles, rituals, dress, entertainment, status signals, shared language or jargon, recurring behavior, alliances, conflict, pressure, and the person who fits or resists the pattern. Separate an observed pattern from a stereotype and show where readers can infer the group from selected evidence. Use the editorial judgment this room allows. Ask for reporting where the pattern is thin.",
+     "aliases": "community culture belonging organization team ritual status group"
+    },
+    {
+     "id": "true-nonfiction:8",
+     "group": "People",
+     "title": "Reveal individual life",
+     "detail": "Use observation and a revealing slice of life to make one person particular.",
+     "prompt": "Render an individual life in this nonfiction through a supported slice of life: what the person does, notices, wants, avoids, risks, says, and changes. Select actions, surroundings, possessions, relationships, and language that make this person particular without turning the passage into a résumé, symbol, or type. Use the editorial judgment this room allows. Flag any interior claim the narrator cannot honestly know.",
+     "aliases": "person profile portrait biography slice observation individual"
+    },
+    {
+     "id": "true-nonfiction:9",
+     "group": "Speech & records",
+     "title": "Shape captured conversation",
+     "detail": "Choose between summary, indirect, and direct dialogue according to evidence and dramatic value.",
+     "prompt": "Shape the conversations in this true piece. Distinguish summary dialogue, indirect dialogue, direct recorded quotation, remembered wording, and reconstruction; choose the least exact form the evidence requires and the most vivid form it honestly permits. Keep exchanges that reveal character, create action, or change understanding; compress chatter. Use the editorial judgment this room allows. Never upgrade paraphrase or memory into a verbatim quotation.",
+     "aliases": "dialog dialogue conversation quote quotation speech transcript direct indirect paraphrase"
+    },
+    {
+     "id": "true-nonfiction:10",
+     "group": "Speech & records",
+     "title": "Use monologue, thought & documentary voices",
+     "detail": "Bring in speeches, interviews, letters, diaries, messages, logs, signs, or thought with clear provenance.",
+     "prompt": "Test monologue and documentary voices in this nonfiction: a sustained speech, interview answer, letter, diary, message, court record, memorandum, journal, log, sign, or the narrator's own remembered thought. Identify what each voice contributes to character, action, context, or counterpoint and label its source status. Use another person's interior thought only when direct reporting or records support it. Use the editorial judgment this room allows.",
+     "aliases": "monologue monolog interior thought diary letter messages records logs documentary"
+    },
+    {
+     "id": "true-nonfiction:11",
+     "group": "Perspective",
+     "title": "Choose the angle of approach",
+     "detail": "Decide whether the material is approached objectively, subjectively, or through an explicit blend.",
+     "prompt": "Choose the angle of approach for this nonfiction before choosing its narrator. Compare an objective angle centered on external facts, systems, or explanation with a subjective angle centered on lived response, judgment, or felt experience. State what becomes relevant or irrelevant under each and test whether any blend has a clear governing logic. Use the editorial judgment this room allows. Do not smuggle opinion into an unexplained claim of objectivity.",
+     "aliases": "angle objective subjective relevance approach"
+    },
+    {
+     "id": "true-nonfiction:12",
+     "group": "Perspective",
+     "title": "Choose point of view & voice",
+     "detail": "Choose whose eyes and language carry the piece, and keep changes legible.",
+     "prompt": "Choose the point of view and voice for this true piece. Compare first person, third person, carefully controlled multiple viewpoints, and a locally inflected narrative voice only where the writer has earned that access. Define what each narrator can know, how close the reader stands, and how any switch will be signaled. Use the editorial judgment this room allows. Do not imitate a community's voice, claim omniscience, or enter another person's mind without evidence.",
+     "aliases": "perspective viewpoint narrator narration vantage first third multiple voice"
+    },
+    {
+     "id": "true-nonfiction:13",
+     "group": "Character",
+     "title": "Develop character through evidence",
+     "detail": "Let readers infer character from scenes, action, speech, contrast, and change.",
+     "prompt": "Develop the real people in this piece through evidence rather than labels. Find supported scenes, decisions, actions, speech, contradictions, relationships, group fit or resistance, and change over time. Separate the writer's judgment from what a reader could infer and identify the next scene or source that would test the portrait. Use the editorial judgment this room allows. Do not invent motives, composite people, or convenient behavior.",
+     "aliases": "character arc motivation contradiction action decision development"
+    },
+    {
+     "id": "true-nonfiction:14",
+     "group": "Character",
+     "title": "Use gestures, mannerisms & physical detail",
+     "detail": "Dole out telling details where they naturally enter the action.",
+     "prompt": "Audit physical detail, gestures, and mannerisms in this character portrait. Keep a detail when it is supported, characteristic rather than accidental, placed where the action naturally reveals it, and meaningful without being overinterpreted. Prefer gradual accumulation to a block description. Use the editorial judgment this room allows. Do not imply temperament, class, diagnosis, or motive from one isolated gesture.",
+     "aliases": "gesture gestures mannerism mannerisms appearance physical detail"
+    },
+    {
+     "id": "true-nonfiction:15",
+     "group": "Structure",
+     "title": "Choose the governing structure",
+     "detail": "Test chronology, function, organic form, journey, spiral, mosaic, or memoir movement.",
+     "prompt": "Choose the governing structure for this nonfiction from the material's actual logic. Compare straight or reworked chronology, organization by function or subject, an organic shape discovered in the reporting, a journey, a spiral that returns with added meaning, an orchestrated sequence, a mosaic of short scenes or fragments, and memoir's selective movement through time. Diagram only the viable options, name the reader promise each makes, and recommend the smallest structural move with the highest payoff. Use the editorial judgment this room allows.",
+     "aliases": "organize organization order arrange architecture braid chronology spiral mosaic journey memoir function"
+    },
+    {
+     "id": "true-nonfiction:16",
+     "group": "Structure",
+     "title": "Rework time without losing the reader",
+     "detail": "Use frames, flashbacks, parallel movement, or converging narratives for a reason.",
+     "prompt": "Test whether this piece should rework chronology. Compare a frame, a true flashback, parallel timelines, or converging narratives. For each viable option, identify the present-time anchor, the transition cues, the information gained by leaving chronology, and the exact return point. Use the editorial judgment this room allows. Reject a time shift that merely repairs omitted setup or creates artificial suspense.",
+     "aliases": "flashback frame parallel converging timeline chronology time"
+    },
+    {
+     "id": "true-nonfiction:17",
+     "group": "Special techniques",
+     "title": "Build a litany or paired accumulation",
+     "detail": "Let short items gather force, pattern, rhythm, or a lasting impression.",
+     "prompt": "Test a litany in this source-grounded nonfiction. Select supported single words, short phrases, repeated clauses, or paired items whose cumulative order creates an impression of a person, place, group, condition, or pressure. Try one restrained sequence, explain its ordering and repeated syntax, and mark the line where accumulation becomes excess. Use the editorial judgment this room allows. Every item must remain supported and the rhythm must serve meaning.",
+     "aliases": "litany list accumulation pairs repetition catalog catalogue"
+    },
+    {
+     "id": "true-nonfiction:18",
+     "group": "Special techniques",
+     "title": "Compress related material",
+     "detail": "Gather material by time, place, or terse sequence without flattening causation.",
+     "prompt": "Test compression by grouping related material: grouping around periods or events, grouping around places, grouping around a sequence, or compression into terse present-tense fragments. Choose one only if its organizing principle clarifies the material. Show what it saves, what nuance it risks, and where full scene should resume. Use the editorial judgment this room allows. Keep facts and causal relationships intact.",
+     "aliases": "group grouping compression period place sequence terse telegraphic"
+    },
+    {
+     "id": "true-nonfiction:19",
+     "group": "Special techniques",
+     "title": "Use a snapshot or stronger verb",
+     "detail": "Create a brief essence of person or place, or replace static phrasing with supported action.",
+     "prompt": "Run a local vividness pass. Where the piece introduces a person or place, test a compact snapshot at the narrow, medium, or wide scale using selected supported detail. Where static forms of “to be” hide a real action, test a more exact active verb and subject. Keep passive or linking constructions when agency, accuracy, or rhythm calls for them. Use the editorial judgment this room allows. Do not convert a snapshot into caricature or invent motion for energy.",
+     "aliases": "snapshot snapshots active verb vivid person place"
+    },
+    {
+     "id": "true-nonfiction:20",
+     "group": "Reporting & ethics",
+     "title": "Research, verify & disclose",
+     "detail": "Find the next reporting move and make the limits of knowledge visible.",
+     "prompt": "Audit this narrative nonfiction for research and ethical choices. Separate what is observed, remembered, recorded, reported by another person, inferred, disputed, or unknown. Identify the next high-value reporting move, verification and attribution needs, consent or privacy concerns, and any reconstruction, compression, altered name, or uncertainty that belongs in disclosure. Use the editorial judgment this room allows. Never use a composite person or scene as if it were factual.",
+     "aliases": "fact check verify attribution consent privacy reporting ethics research disclosure"
+    }
+   ]
+  },
+  {
+   "id": "human-story",
+   "title": "Find the human story",
+   "detail": "Find the moment of change, choose the right beginning and ending, and build stakes, scenes, suspense, surprise, or humor.",
+   "influences": [
+    "Personal storytelling",
+    "Change and consequence"
+   ],
+   "focuses": [
+    {
+     "id": "human-story:21",
+     "group": "",
+     "title": "Find the moment worth telling",
+     "detail": "Search ordinary experience for the small instant that changed meaning.",
+     "prompt": "Help me find the moment worth telling in these notes, memories, conversations, or events. Look for a brief shift in understanding, relationship, status, desire, or self-perception rather than the biggest event. Ask concrete memory questions, identify the strongest candidate, and use the available editorial methods. Do not manufacture significance.",
+     "aliases": "anecdote memory meaningful moment story idea"
+    },
+    {
+     "id": "human-story:22",
+     "group": "",
+     "title": "Clarify the decisive change",
+     "detail": "State what the central person thought before and after the decisive moment.",
+     "prompt": "Find the brief moment of change at the heart of this story. State the before and after as two bounded propositions, identify the exact event or realization between them, and test whether the material supports that transformation. Use the editorial judgment this room allows. Ask me when the change cannot be inferred honestly.",
+     "aliases": ""
+    },
+    {
+     "id": "human-story:23",
+     "group": "",
+     "title": "Choose the beginning and ending",
+     "detail": "Begin close to the action and end on the change rather than an explanation of it.",
+     "prompt": "Help me choose the beginning and ending of this story. Start as close as the material allows to a concrete location and action, avoid front-loaded exposition, and end where the emotional or intellectual change lands. Compare the opening self with the ending self. Use the editorial judgment this room allows and protect any ambiguity the story earns.",
+     "aliases": ""
+    },
+    {
+     "id": "human-story:24",
+     "group": "",
+     "title": "Build scenes without rambling",
+     "detail": "Choose the moments that need to unfold and compress everything else.",
+     "prompt": "Turn this material into a clean sequence of scenes. Identify the purpose, action, turn, and exit of each scene; compress travel, setup, and repeated information; and keep chronology legible unless a departure earns its place. Use the editorial judgment this room allows. Use only events and details I supplied.",
+     "aliases": ""
+    },
+    {
+     "id": "human-story:25",
+     "group": "",
+     "title": "Raise stakes and suspense",
+     "detail": "Make the reader anticipate a real outcome without manufacturing danger.",
+     "prompt": "Help me build stakes and suspense from what actually mattered. Identify desire, obstacle, uncertainty, consequence, planted information, withheld information, and the moment of release. Test whether each delay increases meaning or merely stalls. Use the editorial judgment this room allows; do not exaggerate risk or conceal context dishonestly.",
+     "aliases": ""
+    },
+    {
+     "id": "human-story:26",
+     "group": "",
+     "title": "Use surprise, vulnerability, or humor",
+     "detail": "Find an earned tonal move that reveals character or changes the audience’s understanding.",
+     "prompt": "Find where surprise, vulnerability, or humor could deepen this story. Use reversals, candid admission, observed mismatch, or a precise comic detail already supported by the material. Explain what the move reveals and what tone it risks. Use the editorial judgment this room allows. Do not add a joke or confession merely to make the piece likable.",
+     "aliases": "funny funnier humorous joke comic comedy candid confession"
+    },
+    {
+     "id": "human-story:27",
+     "group": "",
+     "title": "Cut everything outside the story",
+     "detail": "Keep one governing change and remove material that serves a different story.",
+     "prompt": "Help me make this story about one consequential change. Name the governing change, mark passages that belong to a different story or explain what the scene already shows, and protect details that carry character, stakes, or transformation. Use the editorial judgment this room allows and propose reversible cuts for my review.",
+     "aliases": ""
+    }
+   ]
+  },
+  {
+   "id": "memorable-language",
+   "title": "Make the language memorable",
+   "detail": "Choose a specific rhetorical figure, sentence pattern, sound, contrast, repetition, image, or clarity move—and use it only where it earns attention.",
+   "influences": [
+    "Rhetorical figures",
+    "Sentence structure",
+    "Clear prose"
+   ],
+   "focuses": [
+    {
+     "id": "memorable-language:28",
+     "group": "",
+     "title": "Choose the right rhetorical figure",
+     "detail": "Diagnose the intended effect first, then name the few devices that fit.",
+     "prompt": "Diagnose what this passage needs the reader to notice, feel, remember, or anticipate. Choose at most three fitting figures from the full rhetoric palette, define the effect in plain English, and show one restrained application of each. Use the editorial judgment this room allows. Preserve meaning and reject any version that sounds ornamental, canned, or unlike me.",
+     "aliases": ""
+    },
+    {
+     "id": "memorable-language:29",
+     "group": "",
+     "title": "Sound & verbal music",
+     "detail": "Test alliteration, assonance, rhyme, and meter without turning prose into a jingle.",
+     "prompt": "Test whether sound can strengthen this passage using alliteration, assonance, rhyme, or deliberate rhythm and meter. Identify the stressed words and the intended effect, then offer restrained alternatives. Use the editorial judgment this room allows. Avoid sing-song phrasing, tongue twisters, and accidental emphasis.",
+     "aliases": ""
+    },
+    {
+     "id": "memorable-language:30",
+     "group": "",
+     "title": "Repetition & return",
+     "detail": "Use polyptoton, anadiplosis, diacope, epistrophe, epizeuxis, epanalepsis, or anaphora.",
+     "prompt": "Test repetition as a deliberate device in this passage: related forms of one root, last-to-first chaining, interrupted repetition, repeated endings, immediate repetition, circular return, or repeated beginnings. Name the figure used, explain what it emphasizes, and offer no more than three alternatives. Use the editorial judgment this room allows. Keep only repetition that adds force or structure.",
+     "aliases": ""
+    },
+    {
+     "id": "memorable-language:31",
+     "group": "",
+     "title": "Balance, contrast & threes",
+     "detail": "Use antithesis, isocolon, tricolon, chiasmus, or paradox to sharpen a relationship.",
+     "prompt": "Test antithesis, balanced clauses, a three-part progression, reversed parallel structure, or paradox in this passage. Identify the actual relationship in the ideas before shaping the syntax. Use the editorial judgment this room allows. Do not invent a false binary, force three buckets, or make unlike ideas look equivalent.",
+     "aliases": ""
+    },
+    {
+     "id": "memorable-language:32",
+     "group": "",
+     "title": "Sentence order & syntax",
+     "detail": "Test hyperbaton, periodic suspense, hypotaxis, parataxis, hendiadys, enallage, zeugma, syllepsis, prolepsis, or verbless phrasing.",
+     "prompt": "Test sentence order and syntax in this passage: unusual word order, delayed completion, subordinated complexity, short coordinate clauses, noun-and-noun emphasis, deliberate grammar break, one word serving a whole list of clauses, one word read two ways at once, anticipatory reference, or a verbless sentence. Name the device and its effect. Use the editorial judgment this room allows. Preserve clarity and reject any version that calls attention to the trick rather than the idea.",
+     "aliases": ""
+    },
+    {
+     "id": "memorable-language:33",
+     "group": "",
+     "title": "Image, sense & substitution",
+     "detail": "Test merism, blazon, synaesthesia, catachresis, metonymy, synecdoche, transferred epithet, or personification.",
+     "prompt": "Test whether image or substitution can make this passage more exact: a few parts or two opposite ends naming a whole range, a single part standing in for the thing it belongs to, an extended catalog of parts, crossed senses, a deliberately impossible word pairing, an associated object standing for its subject, a transferred modifier, or personification. Use the editorial judgment this room allows. Ground every image in the piece's meaning and avoid cliché, objectification, or decorative metaphor.",
+     "aliases": ""
+    },
+    {
+     "id": "memorable-language:34",
+     "group": "",
+     "title": "Interruption, scale & force",
+     "detail": "Test aposiopesis, rhetorical question, exact number, litotes, pleonasm, hyperbole, adynaton, or congeries.",
+     "prompt": "Test interruption, scale, or accumulation in this passage: deliberate unfinished speech, a purposeful question, an arrestingly exact number, understatement by negation, meaningful redundancy, controlled exaggeration, impossible exaggeration, or a heaped list. Use the editorial judgment this room allows. Do not fake precision, overstate facts, or use a question whose answer the piece avoids.",
+     "aliases": ""
+    },
+    {
+     "id": "memorable-language:35",
+     "group": "",
+     "title": "Paragraphs, clarity & emphasis",
+     "detail": "Apply paragraph and sentence principles without making every sentence short or bland.",
+     "prompt": "Run a composition pass on this draft: one job per paragraph, clear paragraph openings and endings, intentional active or passive voice, positive and concrete statements, every word earning its place, varied sentence architecture, parallel form for parallel ideas, related words kept together, consistent summary tense, and emphasis placed where it lands. Use the editorial judgment this room allows. Preserve useful detail, rhythm, technical accuracy, and deliberate rule-breaking.",
+     "aliases": "parallel parallelism clear clearer clarity concise economy active voice"
+    }
+   ]
+  },
+  {
+   "id": "sharp-message",
+   "title": "Sharpen the message",
+   "detail": "Work on relevance, originality, a curiosity-building title, a repeatable line, a clear framework, or optional argument hierarchy.",
+   "influences": [
+    "Message development",
+    "Argument hierarchy"
+   ],
+   "focuses": [
+    {
+     "id": "sharp-message:36",
+     "group": "",
+     "title": "Find the urgent, relevant problem",
+     "detail": "State whose problem this is, why it matters now, and what changes if it is solved.",
+     "prompt": "Help me identify the urgent or relevant problem this piece addresses. Specify the affected reader, current friction, consequence, and honest reason to care now. Separate true urgency from manufactured pressure. Use the editorial judgment this room allows and keep the claim proportional to the evidence.",
+     "aliases": ""
+    },
+    {
+     "id": "sharp-message:37",
+     "group": "",
+     "title": "Find the original or contrarian point",
+     "detail": "Locate what the piece says that a smart reader may not already know or believe.",
+     "prompt": "Help me find the original, counterintuitive, or contrarian idea in this material. Compare it with the expected view, identify the evidence that earns the departure, and state the difference without provocation for its own sake. Use the editorial judgment this room allows. Preserve nuance and do not fabricate an enemy position.",
+     "aliases": ""
+    },
+    {
+     "id": "sharp-message:38",
+     "group": "",
+     "title": "Build curiosity in the title & opening",
+     "detail": "Create a specific information gap without clickbait or false mystery.",
+     "prompt": "Help me make the title and opening intriguing. Identify the honest information gap, tension, surprising contrast, or unanswered consequence already in the material; then propose distinct title-and-opening pairs. Use the editorial judgment this room allows. Do not hide essential context, overpromise, or use generic clickbait.",
+     "aliases": ""
+    },
+    {
+     "id": "sharp-message:39",
+     "group": "",
+     "title": "Find the human proof",
+     "detail": "Use one real story or example to make the message concrete and relatable.",
+     "prompt": "Find the strongest real human story or example that makes this message concrete. Explain exactly what claim it demonstrates and what it cannot prove. Use the editorial judgment this room allows. Ask for a real example if the supplied material has none; do not invent a testimonial, scene, or composite person.",
+     "aliases": ""
+    },
+    {
+     "id": "sharp-message:40",
+     "group": "",
+     "title": "Create a repeatable line",
+     "detail": "Distill the idea into language a reader can accurately carry away.",
+     "prompt": "Create a repeatable line for the central idea. Preserve the claim's limits, test sound, contrast, rhythm, and specificity, and offer several materially different versions. Use the editorial judgment this room allows. Reject slogans that are catchier than they are true.",
+     "aliases": ""
+    },
+    {
+     "id": "sharp-message:41",
+     "group": "",
+     "title": "Make the framework visible",
+     "detail": "Turn a real process or distinction into steps, columns, or a simple visual logic.",
+     "prompt": "Help me make the piece's real framework visible. Identify an actual sequence, decision, contrast, or set of reusable categories in the material; test whether a short process, paired columns, or diagram would clarify it; and name what does not fit. Use the editorial judgment this room allows. Do not force symmetry or invent a branded methodology.",
+     "aliases": ""
+    },
+    {
+     "id": "sharp-message:42",
+     "group": "",
+     "title": "Check argument hierarchy",
+     "detail": "Use answer-first grouping only when this destination and reader benefit from it.",
+     "prompt": "Check whether this memo, proposal, or explanation benefits from an answer-first hierarchy. State the governing answer, group only support that truly belongs together, order the groups by a stated logic, and surface gaps or overlaps. Use the editorial judgment this room allows. Do not rewrite narrative nonfiction into consultant prose, force MECE categories, or repeat the conclusion at every level.",
+     "aliases": "hierarchy grouping mece answer first consultant memo proposal"
+    }
+   ]
+  },
+  {
+   "id": "spoken-piece",
+   "title": "Hook them with a story",
+   "detail": "Lead with a real human moment, build struggle and change, connect the story to the idea, and give the audience something worth remembering.",
+   "influences": [
+    "Spoken storytelling",
+    "Audience connection"
+   ],
+   "focuses": [
+    {
+     "id": "spoken-piece:43",
+     "group": "",
+     "title": "Open with a story",
+     "detail": "Put a supported person in motion before explaining the lesson.",
+     "prompt": "Find the strongest true story opening for this piece. Start with a person in a specific supported situation, an immediate desire or problem, and an unanswered consequence; delay general explanation only as long as the story can carry it. Use the editorial judgment this room allows. Do not manufacture a scene, quotation, or cliffhanger.",
+     "aliases": ""
+    },
+    {
+     "id": "spoken-piece:44",
+     "group": "",
+     "title": "Find the backstory and why",
+     "detail": "Use origin or adversity to explain the conviction behind the idea.",
+     "prompt": "Find the backstory that explains why this idea, decision, or mission matters. Identify the earlier condition, struggle, or experience that changed the protagonist's direction and connect it to the present claim. Use the editorial judgment this room allows. Use only supplied experience and avoid turning hardship into a branding device.",
+     "aliases": ""
+    },
+    {
+     "id": "spoken-piece:45",
+     "group": "",
+     "title": "Build struggle into change",
+     "detail": "Shape setup, difficulty, response, turning point, and earned transformation.",
+     "prompt": "Shape the story around a real struggle and change. Map the setup, desire, obstacle, attempted response, turning point, outcome, and what the protagonist understands afterward. Use the editorial judgment this room allows. Keep setbacks specific, avoid inflated triumph, and preserve unresolved consequences.",
+     "aliases": ""
+    },
+    {
+     "id": "spoken-piece:46",
+     "group": "",
+     "title": "Choose the protagonist",
+     "detail": "Give the audience someone whose choices make the idea visible.",
+     "prompt": "Choose who should carry this story. Compare the writer, a customer, colleague, family member, community, or other supported subject by agency, stakes, access, and ethical risk. Show what the audience can understand through that person's choices. Use the editorial judgment this room allows. Do not turn a person into a mascot for the message.",
+     "aliases": ""
+    },
+    {
+     "id": "spoken-piece:47",
+     "group": "",
+     "title": "Make facts travel through story",
+     "detail": "Place evidence where it changes what the audience understands about the action.",
+     "prompt": "Integrate facts and evidence into this story. Tie each important fact to a decision, obstacle, revelation, or consequence; identify where data interrupts the narrative and where narrative obscures the evidence. Use the editorial judgment this room allows. Keep sources visible and do not imply that one anecdote proves a general claim.",
+     "aliases": ""
+    },
+    {
+     "id": "spoken-piece:48",
+     "group": "",
+     "title": "Create a memorable moment",
+     "detail": "Find an earned reveal, contrast, object, demonstration, or line the audience can carry away.",
+     "prompt": "Find an earned memorable moment in this material: a reveal, concrete contrast, meaningful object, demonstration, image, or line that crystallizes the idea. Explain why it belongs at that point in the story and what it risks. Use the editorial judgment this room allows. Do not stage spectacle or novelty that the evidence cannot support.",
+     "aliases": ""
+    },
+    {
+     "id": "spoken-piece:49",
+     "group": "",
+     "title": "Make it natural to tell aloud",
+     "detail": "Preserve the story while removing written-language friction.",
+     "prompt": "Prepare this story for a listening audience after its narrative structure works. Mark sentences that are difficult to say or hear, restore conversational syntax, create clean pauses and transitions, and protect the emotional turn and memorable ending. Use the editorial judgment this room allows. Do not replace my voice with motivational-speaker cadence.",
+     "aliases": "natural conversational speak spoken speech oral aloud cadence"
+    }
+   ]
+  }
+ ]
+}

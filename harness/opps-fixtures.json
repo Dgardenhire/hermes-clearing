@@ -1,0 +1,342 @@
+{
+ "about": "Real answers from claude-sonnet-5-5 (through claude -p, the bench transport) on the sample piece, Nov 9, 2026, run through the plugin's own routes and checks (opps1 bench). The harness serves them as the model's answers.",
+ "made_by": "claude-sonnet-5-5",
+ "made_on": "2026-11-09",
+ "figures": {
+  "figures": [
+   {
+    "id": "figure:diacope",
+    "name": "Diacope",
+    "definition": "A word repeated after a short break.",
+    "group": "Repetition & return",
+    "start": 0,
+    "end": 106,
+    "quote": "Every Saturday morning the branch library on Ninth Street opens at ten, and every Saturday there is a line",
+    "works": true,
+    "why": "\"Every Saturday\" returns after a short break, so the routine feels settled and dependable. It also sets up the line as a habit the reader can picture."
+   },
+   {
+    "id": "figure:tricolon",
+    "name": "Tricolon",
+    "definition": "Three parts, often rising in weight.",
+    "group": "Balance, contrast & threes",
+    "start": 201,
+    "end": 307,
+    "quote": "the printers, the Wi-Fi and the one quiet room in the neighborhood that does not charge anyone to sit down",
+    "works": true,
+    "why": "The three items grow in length and weight, ending on the quiet free room. That ending puts the emphasis on what the piece is defending."
+   },
+   {
+    "id": "figure:pleonasm",
+    "name": "Pleonasm",
+    "definition": "Using more words than needed, for weight.",
+    "group": "Interruption, scale & force",
+    "start": 428,
+    "end": 465,
+    "quote": "I think that might perhaps understate",
+    "works": false,
+    "why": "The stacked hedges \"think,\" \"might\" and \"perhaps\" add no weight. They soften the claim just where the piece needs force."
+   },
+   {
+    "id": "figure:personification",
+    "name": "Personification",
+    "definition": "Giving a thing human action or will.",
+    "group": "Image, sense & substitution",
+    "start": 1093,
+    "end": 1193,
+    "quote": "a library that cannot hold a tired nurse for forty minutes has forgotten what it is supposed to hold",
+    "works": true,
+    "why": "Giving the library a memory it can lose turns a policy question into one of identity. The repeated \"hold\" also carries the point."
+   },
+   {
+    "id": "figure:simile",
+    "name": "Simile",
+    "definition": "A comparison made openly, with like or as.",
+    "group": "Image, sense & substitution",
+    "start": 1360,
+    "end": 1481,
+    "quote": "in the same way that counting the pews would be the wrong way to measure a church that runs a food pantry in its basement",
+    "works": true,
+    "why": "The church comparison shows why checkouts miss the library's real work. Readers can see at once that the measure is wrong, and the pews-and-pantry picture does that work."
+   },
+   {
+    "id": "figure:metaphor",
+    "name": "Metaphor",
+    "definition": "Calling one thing by another's name to carry over what it is like.",
+    "group": "Image, sense & substitution",
+    "start": 1610,
+    "end": 1641,
+    "quote": "leave the fewest marks on paper",
+    "works": true,
+    "why": "\"Marks on paper\" stands in for being counted in records. It explains why the heaviest users go unseen, and it connects to the paper budget in the next clause."
+   }
+  ],
+  "counts": {
+   "returned": 9,
+   "matched": 6,
+   "dropped": 3,
+   "unknown_id": 0,
+   "unmatched": 2,
+   "not_there": 1
+  }
+ },
+ "opportunities": {
+  "opportunities": [
+   {
+    "id": "craft:true-nonfiction:17",
+    "type": "craft",
+    "family": "language",
+    "name": "Build a litany or paired accumulation",
+    "definition": "Let short items gather force, pattern, rhythm, or a lasting impression.",
+    "group": "Shape true nonfiction",
+    "start": 1484,
+    "end": 1573,
+    "quote": "The branch has no counter for the printer queue or the tables or the chair by the window.",
+    "why": "The uncounted things are named in a short list. Extending it into a litany would make the missing ledger feel long and real. The writer would supply the extra items seen on those Saturdays.",
+    "rank": 1
+   },
+   {
+    "id": "craft:human-story:arc-2",
+    "type": "craft",
+    "family": "story",
+    "name": "Make the turn happen on the page",
+    "definition": "Show the moment of change as it happens instead of reporting it afterward.",
+    "group": "Find the human story",
+    "start": 677,
+    "end": 775,
+    "quote": "A man named Arturo printed the same résumé four times because the shelter's address kept changing.",
+    "why": "Arturo is the piece's best human proof but gets one sentence. One moment on the page, such as what he said or what he did with the fourth copy, would let the reader feel the turn. Only the writer knows what happened.",
+    "rank": 2
+   },
+   {
+    "id": "method:hook",
+    "type": "method",
+    "family": "structure",
+    "name": "Make the opening work",
+    "definition": "Find openings that earn attention without manufactured drama.",
+    "group": "Methods",
+    "start": 108,
+    "end": 186,
+    "quote": "It is important to note that most of the people in it are not there for books.",
+    "why": "The throat-clearing delays the surprise. Stating the fact directly, or opening on one person in the line, would make the first paragraph work harder.",
+    "rank": 3
+   },
+   {
+    "id": "figure:antithesis",
+    "type": "figure",
+    "family": "figure",
+    "name": "Antithesis",
+    "definition": "Two opposed ideas set side by side in matching form.",
+    "group": "Balance, contrast & threes",
+    "start": 1574,
+    "end": 1712,
+    "quote": "So the people who use the room most leave the fewest marks on paper, and a budget built only from paper will always find them easy to cut.",
+    "why": "The idea is already a contrast but loosely built. Matching the two halves in form would make it a line a council member could repeat.",
+    "rank": 4
+   },
+   {
+    "id": "craft:sharp-message:40",
+    "type": "craft",
+    "family": "language",
+    "name": "Create a repeatable line",
+    "definition": "Distill the idea into language a reader can accurately carry away.",
+    "group": "Sharpen the message",
+    "start": 1714,
+    "end": 1824,
+    "quote": "If the council wants to save money, it should count who uses the room before it decides who can do without it.",
+    "why": "The ask is wordy at the close. A compact line echoing the title would give readers one sentence to carry out.",
+    "rank": 5
+   },
+   {
+    "id": "method:specificity",
+    "type": "method",
+    "family": "detail",
+    "name": "Find the specific and surprising",
+    "definition": "Look for concrete observation, human detail, and earned humor.",
+    "group": "Methods",
+    "start": 428,
+    "end": 634,
+    "quote": "I think that might perhaps understate what the building actually does, which is serve as the only public place within two miles where a person can basically leverage a free afternoon into a job application.",
+    "why": "The hedges and the jargon ('leverage') blur the claim. Plain, concrete wording would sharpen it, and the writer could name what the two-mile figure rests on.",
+    "rank": 6
+   },
+   {
+    "id": "craft:true-nonfiction:14",
+    "type": "craft",
+    "family": "story",
+    "name": "Use gestures, mannerisms & physical detail",
+    "definition": "Dole out telling details where they naturally enter the action.",
+    "group": "Shape true nonfiction",
+    "start": 776,
+    "end": 873,
+    "quote": "Two sisters did their chemistry homework at the corner table until the lights flickered at close.",
+    "why": "One physical detail from the writer's notes, such as a gesture, a shared pencil or a page, would make the sisters particular rather than typical.",
+    "rank": 7
+   },
+   {
+    "id": "method:objections",
+    "type": "method",
+    "family": "detail",
+    "name": "Anticipate counterarguments",
+    "definition": "Surface serious objections and places that need evidence.",
+    "group": "Methods",
+    "start": 1310,
+    "end": 1482,
+    "quote": "That number is real. It is also the wrong number, in the same way that counting the pews would be the wrong way to measure a church that runs a food pantry in its basement.",
+    "why": "A reader may ask why checkouts shouldn't count. A short answer to the objection, saying what a better measure such as visits or printer jobs would show, would make the argument harder to wave off.",
+    "rank": 8
+   }
+  ],
+  "keep": {
+   "start": 1093,
+   "end": 1193,
+   "quote": "a library that cannot hold a tired nurse for forty minutes has forgotten what it is supposed to hold"
+  },
+  "counts": {
+   "returned": 9,
+   "matched": 8,
+   "dropped": 1,
+   "unknown_id": 0,
+   "unmatched": 0,
+   "keep_overlap": 0,
+   "already_used": 1,
+   "repeat": 0,
+   "cut_cap": 0,
+   "shown": 8
+  }
+ },
+ "show_me": [
+  {
+   "id": "craft:true-nonfiction:17",
+   "quote": "The branch has no counter for the printer queue or the tables or the chair by the window.",
+   "result": {
+    "selection": {
+     "start": 1484,
+     "end": 1573,
+     "text": "The branch has no counter for the printer queue or the tables or the chair by the window."
+    },
+    "text": "The branch has no counter for the printer queue, or the tables, or the chair by the window. It has no counter for [who waits at the printer], or [what people do at the tables], or [who sits in the chair by the window, and for how long]. Nothing counts [something seen on those Saturdays], or [another uncounted thing].",
+    "how": "Extended the list into a litany with bracketed blanks for details only the writer knows.",
+    "unsupported": []
+   }
+  },
+  {
+   "id": "craft:human-story:arc-2",
+   "quote": "A man named Arturo printed the same résumé four times because the shelter's address kept changing.",
+   "result": {
+    "selection": {
+     "start": 677,
+     "end": 775,
+     "text": "A man named Arturo printed the same résumé four times because the shelter's address kept changing."
+    },
+    "text": "A man named Arturo printed the same résumé four times because the shelter's address kept changing. He fed the machine again each time the address changed, and when the fourth copy came out warm he [what he did or said with it].",
+    "how": "Added a moment after the fourth copy, with a blank for what Arturo did or said.",
+    "unsupported": []
+   }
+  },
+  {
+   "id": "method:hook",
+   "quote": "It is important to note that most of the people in it are not there for books.",
+   "result": {
+    "selection": {
+     "start": 108,
+     "end": 186,
+     "text": "It is important to note that most of the people in it are not there for books."
+    },
+    "text": "Most of the people in it are not there for books.",
+    "how": "Cut the throat-clearing and stated the fact directly.",
+    "unsupported": []
+   }
+  },
+  {
+   "id": "figure:antithesis",
+   "quote": "So the people who use the room most leave the fewest marks on paper, and a budget built only from paper will always find them easy to cut.",
+   "result": {
+    "selection": {
+     "start": 1574,
+     "end": 1712,
+     "text": "So the people who use the room most leave the fewest marks on paper, and a budget built only from paper will always find them easy to cut."
+    },
+    "text": "The people who use the room most leave the fewest marks on paper, and a budget built only from paper will find the fewest reasons to keep it.",
+    "how": "Matched both halves in form: fewest marks on paper, fewest reasons to keep it.",
+    "unsupported": []
+   }
+  },
+  {
+   "id": "craft:sharp-message:40",
+   "quote": "If the council wants to save money, it should count who uses the room before it decides who can do without it.",
+   "result": {
+    "selection": {
+     "start": 1714,
+     "end": 1824,
+     "text": "If the council wants to save money, it should count who uses the room before it decides who can do without it."
+    },
+    "text": "Count who uses the room before you decide who can do without it.",
+    "how": "Cut the council conditional into one compact imperative echoing the title's counting.",
+    "unsupported": []
+   }
+  },
+  {
+   "id": "method:specificity",
+   "quote": "I think that might perhaps understate what the building actually does, which is serve as the only public place within two miles where a person can basically leverage a free afternoon into a job application.",
+   "result": {
+    "selection": {
+     "start": 428,
+     "end": 634,
+     "text": "I think that might perhaps understate what the building actually does, which is serve as the only public place within two miles where a person can basically leverage a free afternoon into a job application."
+    },
+    "text": "I think that understates what the building does. It is the only public place within two miles [what the two-mile figure rests on] where a person can turn a free afternoon into a job application.",
+    "how": "Cut hedges and \"leverage\"; plain verb; blank for the two-mile basis.",
+    "unsupported": []
+   }
+  },
+  {
+   "id": "craft:true-nonfiction:14",
+   "quote": "Two sisters did their chemistry homework at the corner table until the lights flickered at close.",
+   "result": {
+    "selection": {
+     "start": 776,
+     "end": 873,
+     "text": "Two sisters did their chemistry homework at the corner table until the lights flickered at close."
+    },
+    "text": "Two sisters did their chemistry homework at the corner table, [what one of them did with her hands or pencil] until the lights flickered at close.",
+    "how": "Added a bracketed blank for one physical detail of the sisters.",
+    "unsupported": []
+   }
+  },
+  {
+   "id": "method:objections",
+   "quote": "That number is real. It is also the wrong number, in the same way that counting the pews would be the wrong way to measure a church that runs a food pantry in its basement.",
+   "result": {
+    "selection": {
+     "start": 1310,
+     "end": 1482,
+     "text": "That number is real. It is also the wrong number, in the same way that counting the pews would be the wrong way to measure a church that runs a food pantry in its basement."
+    },
+    "text": "That number is real. It is also the wrong number, in the same way that counting the pews would be the wrong way to measure a church that runs a food pantry in its basement. Checkouts only tell you how many books left the building. They say nothing about who came in and stayed. Count [how many] visits a year, or [how many] print jobs, or [how many] people using the computers, and the line [goes which way / stays where it was]. A reader can fairly ask why checkouts shouldn't be the measure; the answer is that they were built to count one thing, and the building now does more.",
+    "how": "Added a short answer to the checkouts objection, with blanks for visit and printer figures.",
+    "unsupported": []
+   }
+  }
+ ],
+ "coach": [
+  {
+   "id": "figure:diacope",
+   "quote": "Every Saturday morning the branch library on Ninth Street opens at ten, and every Saturday there is a line",
+   "line": "Every Saturday morning the branch library opens at ten, every Saturday there is a line, and every Saturday the line is longer.",
+   "text": "Yes, mostly: \"every Saturday there is a line, and every Saturday the line is longer\" brings the phrase back after a break, so the habit feels settled and then starts to move. Notice that \"Every Saturday morning\" opens the sentence and then the phrase comes back twice, so what should the reader feel by the third time, and does the phrase still feel like a steady routine or something else? Your original had \"on Ninth Street\" and your try dropped it, so what does the reader lose or gain without that place? And if the line growing is the point, which word carries that weight, and is it where you want the reader to land?"
+  },
+  {
+   "id": "figure:tricolon",
+   "quote": "the printers, the Wi-Fi and the one quiet room in the neighborhood that does not charge anyone to sit down",
+   "line": "the printers, the Wi-Fi and the one quiet room",
+   "text": "Partly: you kept the three-part shape, and \"the one quiet room\" is a fine place to end, but the parts don't yet grow, and the ending has lost what made it the thing you're defending. Say the three items aloud: which one feels heaviest now, and is it the last? What did the original ending say about the room that you cut, and what does the reader lose without it? What do you want the reader to feel when the list stops?"
+  },
+  {
+   "id": "craft:true-nonfiction:17",
+   "quote": "The branch has no counter for the printer queue or the tables or the chair by the window.",
+   "line": "Arturo printed the same résumé four times. Two sisters did chemistry homework at the corner table. A nurse slept.",
+   "text": "Partly: you've gathered real Saturday people, and \"A nurse slept.\" is the quietest, truest item, but the three sentences read as separate scenes more than as a ledger of things nobody counts. Which of them is something the branch has no counter for, the way it has none for the printer queue or the chair by the window? Where would the reader feel the list pile up, and what happens to that feeling if the items share a shape, or if one breaks it? What other detail from those Saturdays, one only you saw, belongs beside the nurse?"
+  }
+ ]
+}

@@ -1,0 +1,48 @@
+{
+ "title": "The room nobody counts",
+ "body": "Every Saturday morning the branch library on Ninth Street opens at ten, and every Saturday there is a line. It is important to note that most of the people in it are not there for books. They come for the printers, the Wi-Fi and the one quiet room in the neighborhood that does not charge anyone to sit down.\n\nThe city is now deciding whether to cut the branch to four days a week. The budget memo calls it a modest efficiency. I think that might perhaps understate what the building actually does, which is serve as the only public place within two miles where a person can basically leverage a free afternoon into a job application.\n\nI spent three Saturdays there this fall. A man named Arturo printed the same résumé four times because the shelter's address kept changing. Two sisters did their chemistry homework at the corner table until the lights flickered at close. A woman in a hospital badge slept for forty minutes in the reading chair by the window, and nobody woke her, because the librarian on duty had decided long ago that sleep was one of the things the room was for and that a library that cannot hold a tired nurse for forty minutes has forgotten what it is supposed to hold.\n\nNone of them shows up in the memo. The memo counts checkouts, and checkouts have fallen by a third in five years. That number is real. It is also the wrong number, in the same way that counting the pews would be the wrong way to measure a church that runs a food pantry in its basement.\n\nThe branch has no counter for the printer queue or the tables or the chair by the window. So the people who use the room most leave the fewest marks on paper, and a budget built only from paper will always find them easy to cut.\n\nIf the council wants to save money, it should count who uses the room before it decides who can do without it.",
+ "sample_read": {
+  "verdict": "An op-ed arguing that a branch library's value is invisible to a budget that counts only checkouts, with scenes that carry the case. The news, a proposed cut to four days, waits until the second paragraph, the key number has no source, and the central claim about the building is hedged and padded.",
+  "keep": {
+   "quote": "a library that cannot hold a tired nurse for forty minutes has forgotten what it is supposed to hold",
+   "why": "It turns one small scene into the whole argument about what a library is for."
+  },
+  "changes": [
+   {
+    "kind": "structure",
+    "quote": "Every Saturday morning the branch library on Ninth Street opens at ten, and every Saturday there is a line.",
+    "change": "Open with the proposed cut",
+    "why": "The news, a cut to four days a week, sits in paragraph two, so the reader gets a scene before learning what is at stake. Leading with the decision tells them why the line matters.",
+    "try": "The city is now deciding whether to cut the branch library on Ninth Street to four days a week, and every Saturday morning, when it opens at ten, there is a line."
+   },
+   {
+    "kind": "structure",
+    "quote": "The city is now deciding whether to cut the branch to four days a week. The budget memo calls it a modest efficiency.",
+    "change": "Trim the repeated news",
+    "why": "The new opening already states the cut, so this paragraph says it twice. Keep only the memo's framing, which is what the piece argues against.",
+    "try": "The budget memo calls the cut a modest efficiency."
+   },
+   {
+    "kind": "reporting",
+    "quote": "checkouts have fallen by a third in five years",
+    "change": "Say where the figure comes from",
+    "why": "The whole argument concedes this number, but the reader cannot check it. It has no origin and no date range.",
+    "try": "checkouts have fallen by a third in five years, [according to the source and the years of this figure]"
+   },
+   {
+    "kind": "line",
+    "quote": "I think that might perhaps understate what the building actually does, which is serve as the only public place within two miles where a person can basically leverage a free afternoon into a job application.",
+    "change": "Drop the hedges and the jargon",
+    "why": "\"I think,\" \"might perhaps\" and \"basically leverage\" bury the strongest claim in the piece. The two-mile claim also needs a source the reader can check.",
+    "try": "The memo understates what the building does: it is the only public place within two miles [source for the two-mile claim] where a person can turn a free afternoon into a job application."
+   }
+  ],
+  "cut_first": {
+   "quote": "It is important to note that",
+   "why": "Filler that delays the claim; the sentence works without it."
+  },
+  "made_by": "claude-sonnet-5-5",
+  "made_on": "2026-11-09",
+  "source": "bench run 2026-11-09 02:01:30 CST (premium-plan/clearing/loop2/bench/sample-read-20261109-020108.json), claude -p, plugin routes"
+ }
+}

@@ -1,0 +1,20 @@
+The Clearing for Hermes
+
+Required Notice: Copyright (c) 2026 Damon Gardenhire
+
+The Clearing's own code and text are under the PolyForm Shield License 1.0.0 (LICENSE).
+
+Bundled code
+
+desktop/plugin.js includes code from hermes-ui-kit (its src/ folder: register, hooks, primitives, states, styles
+and tokens), compiled in by the kit's scripts/build.mjs. hermes-ui-kit is the author's own code, written by
+Damon Gardenhire, the author of The Clearing. Its package.json says "UNLICENSED" because the kit is not published
+on its own. The copy included in The Clearing is included under the same PolyForm Shield License 1.0.0 as the rest
+of The Clearing, with the Required Notice above.
+
+Third-party material, under its own licenses
+
+- Libre Caslon Text, SIL Open Font License 1.1: desktop/assets/Libre-Caslon-Text-OFL.txt
+- Open English WordNet 2025 (CC BY 4.0, by the Open English WordNet team) and WordNet 3.1 (Copyright 2011
+  Princeton University, under the WordNet license): library/thesaurus/NOTICE.txt, which also travels in every
+  thesaurus shard. The shards were built by scripts/build-thesaurus.mjs.

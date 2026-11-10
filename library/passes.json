@@ -1,0 +1,43 @@
+{
+ "ported_from": "The Clearing web app, branch clearing-tester-1",
+ "method_version": "Clearing editorial methods 1",
+ "protection": "Preserve facts, quotes, source boundaries, meaningful uncertainty, distinctive language and deliberate rhythm. Do not infer AI authorship or mechanically ban a character or phrase. Diagnose the actual piece. No manuscript change is accepted until the author chooses it.",
+ "passes": [
+  {
+   "id": "typos",
+   "title": "Fix punctuation and typos",
+   "detail": "A narrow proofread. Every correction stays a proposal.",
+   "kind": "changes"
+  },
+  {
+   "id": "weakest",
+   "title": "Find weak sentences",
+   "detail": "Find the sentences doing the least for the piece.",
+   "kind": "findings"
+  },
+  {
+   "id": "long",
+   "title": "Find sentences that run long",
+   "detail": "Look for a sentence that asks too much in one breath.",
+   "kind": "findings"
+  },
+  {
+   "id": "convoluted",
+   "title": "Find tangled sentences",
+   "detail": "Show where the meaning gets hard to follow.",
+   "kind": "findings"
+  },
+  {
+   "id": "tone",
+   "title": "Find words that feel out of place",
+   "detail": "Judge the words against this piece, not a banned-word list.",
+   "kind": "findings"
+  },
+  {
+   "id": "hedges",
+   "title": "Find hedges and filler",
+   "detail": "Keep honest uncertainty. Question padding.",
+   "kind": "findings"
+  }
+ ]
+}

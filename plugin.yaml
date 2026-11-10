@@ -1,0 +1,16 @@
+# The Clearing for Hermes. name is the registry key; label is the display name.
+manifest_version: 2
+name: clearing
+label: The Clearing
+version: 0.1.0
+description: A writing room for Hermes. Write in a quiet page, run a built-in quick check, and ask your own Hermes model to read your piece. It shows suggested changes right in your page, pinned to your exact words. Click Use this to put a suggestion into your page.
+author: Damon Gardenhire
+license: PolyForm-Shield-1.0.0
+kind: standalone
+requires_hermes: ">=0.22.6"
+tags: [writing, editing, desktop]
+platforms: []
+capabilities: []
+provides_tools: []
+provides_hooks: [post_auxiliary_call]
+requires_env: []
