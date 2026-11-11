@@ -233,6 +233,25 @@ async def post_restore(piece_id: str):
         _fail(e)
 
 
+@router.post("/pieces/{piece_id}/delete")
+async def post_delete(piece_id: str):
+    """Delete forever: only a piece already in the trash, with its versions, passes and suggestions."""
+    try:
+        store.delete_piece(piece_id)
+        return {"pieces": store.list_pieces(), "trash": store.list_pieces(trashed=True)}
+    except Exception as e:
+        _fail(e)
+
+
+@router.post("/trash/empty")
+async def post_empty_trash():
+    try:
+        n = store.empty_trash()
+        return {"deleted": n, "pieces": store.list_pieces(), "trash": store.list_pieces(trashed=True)}
+    except Exception as e:
+        _fail(e)
+
+
 @router.get("/pieces/{piece_id}/versions")
 async def get_versions(piece_id: str):
     try:
@@ -633,7 +652,7 @@ async def post_pass(body: dict):
         if t["kind"] in ("openings", "flip", "voice", "lessons", "guidance", "across", "debate", "endings", "titles", "start", "figures", "opps"):
             selection = None  # these read the whole piece (openings and flips replace a sentence or paragraph in it)
         version = library.version_key(text) if t["kind"] in SPOT_KINDS else None
-        if version:  # Spot the figures and Find opportunities: one result per piece version, kept and shown again
+        if version:  # Find figures of speech and Where to add a technique: one result per piece version, kept and shown again
             cached = store.cached_pass(piece["id"], t["id"], version)
             if cached:
                 return _view(cached) | {"cached": True}
@@ -994,6 +1013,31 @@ async def post_dictation(body: dict):
         except Exception:
             _log.warning("clearing: dictation failed", exc_info=True)
             raise ValueError(dictation.FAILED)
+    except Exception as e:
+        _fail(e)
+
+
+# ---------- the built-in scenes ----------
+# The three photographs ship in desktop/assets/ and reach the page here instead of inside plugin.js, which keeps
+# the bundle small. Kept in step with scripts/embed_assets.py::SCENES; the page checks the hash against its own.
+SCENES = {"snow": ("snow-light.jpg", "image/jpeg"), "marsh": ("quiet-marsh.jpg", "image/jpeg"),
+          "tide": ("night-tide.jpg", "image/jpeg")}
+_SCENE_DIR = Path(__file__).resolve().parents[1] / "desktop" / "assets"
+
+
+@router.get("/scene/builtin/{name}")
+async def get_builtin_scene(name: str):
+    import base64
+    import hashlib
+    try:
+        if name not in SCENES:
+            raise LookupError("That scene is not part of The Clearing.")
+        file, mime = SCENES[name]
+        raw = (_SCENE_DIR / file).read_bytes()
+        return {"name": name, "mime": mime, "hash": hashlib.sha256(raw).hexdigest()[:12],
+                "data": base64.b64encode(raw).decode("ascii")}
+    except OSError:
+        _fail(LookupError("That scene's picture is missing from The Clearing's folder."))
     except Exception as e:
         _fail(e)
 

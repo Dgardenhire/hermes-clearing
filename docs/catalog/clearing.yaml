@@ -1,30 +1,33 @@
-# DRAFT for plugin-catalog/clearing.yaml. Not submitted. Re-pin at release: /usr/bin/python3 scripts/pin_catalog.py
-# The PR that adds it: docs/catalog/PR.md
-# License: PolyForm Shield 1.0.0 (PolyForm-Shield-1.0.0, LICENSE in the repo). The catalog schema has no license key.
+# Entry for plugin-catalog/clearing.yaml in hermes-agent. Replace SHA_PLACEHOLDER (sha and image) with the 40-character commit to pin.
+# The PR text is docs/catalog/PR.md. The catalog schema has no license key: the code is PolyForm Shield 1.0.0 (LICENSE).
 name: clearing
+title: The Clearing
 repo: https://github.com/Dgardenhire/hermes-clearing
-sha: 992a748464c628796aaff823f3ca422b6b278633
-description: "The Clearing: a writing room for Hermes Desktop. Write in a quiet page set in Libre Caslon Text inside a scene that follows your light or dark theme. Quick check marks throat-clearing, stacked hedges, filler, stock phrases and long sentences without using your model. Other words shows senses and other words for any word you double-click, from Open English WordNet, also without your model. The Ask line (Cmd/Ctrl+E) finds the right pass in plain words across the editor passes, 9 composition checks, 25 editorial methods and 56 craft techniques, and runs it on your own Hermes model. Every note is pinned to an exact passage of your text and checked against it before you see it; corrections come as change records you keep or skip; suggested rewrites, openings and endings show in your page, and one goes in when you click Use this. Pieces, versions and passes are kept; nothing is deleted outright (past 200 versions of one piece, the oldest pause-saves roll off). Disclosure: editor passes go through Hermes's plugin LLM access to your configured model on the plugin's own auxiliary task clearing_editor (Settings, Models, Auxiliary), only when you start one, sending the piece or selected passage and its title with secrets scrubbed by Hermes's redaction first; registers one observe-only hook, post_auxiliary_call, that ignores every task but clearing_editor and reads only its finish reason, model name and token counts (kept in memory to catch cut-off answers; never prompt or reply text; never changes a call); stores pieces, versions and pass results in <HERMES_HOME>/plugin-data/clearing/clearing.db and preferences plus an unsaved-text buffer in desktop plugin storage; reads only files you pick; writes text exports only into a folder you grant, and builds Word exports in <HERMES_HOME>/plugin-data/clearing/exports for Hermes's save dialog; a web page you bring in is read by Hermes's web tool, and dictation goes to the speech-to-text set up in Hermes (named before anything is sent); no background work, credentials, telemetry or updates. Bundles Libre Caslon Text (SIL OFL 1.1) and Open English WordNet 2025 (CC BY 4.0) with WordNet 3.1 (Princeton license). The Clearing's own code is under the PolyForm Shield License 1.0.0."
+sha: SHA_PLACEHOLDER
+description: "The Clearing is a writing editor inside Hermes with 159 editing methods you can run by name: 11 editor passes, 9 composition checks drawn from Strunk's rules, 33 editorial methods, 56 craft techniques and 44 figures of speech it can find in your draft or suggest where one would help. Press Read my piece and it marks your own words with what to change, most important first. Nothing changes until you press Use this. Three reviewers, a newcomer, a skeptic and a line editor, can each read the piece and then argue it out. When a suggestion adds a fact you never wrote, it says so before you keep it, and the page shows how much of the piece is still your own words. A built-in quick check and dictionary work without a model. An independent community plugin, not made or endorsed by Nous Research. Disclosure: no network calls of its own. Editor passes go to the model you set in Hermes, only when you start one, with secrets removed by Hermes first; Bring in a link hands a public address to Hermes's web_extract after refusing non-public hosts; dictation goes to Hermes speech-to-text and, for a cloud service, waits until you press Send. Reads only files you pick, plus Hermes's speech-to-text setting and the Hugging Face model cache, both read-only. No shell commands, background processes, stored credentials or telemetry; one observe-only post_auxiliary_call hook reads the finish reason, model name and token counts of its own calls. When it falls back to a local faster-whisper model it sets KMP_DUPLICATE_LIB_OK=TRUE in the Hermes process. Your writing, its versions and a quote-stripped debug.log stay in <HERMES_HOME>/plugin-data/clearing/; Delete forever in the Trash erases a piece."
 maintainer: Dgardenhire
 tier: community
 category: desktop
-requires_hermes: ">=0.22.6"
-docs_url: https://github.com/Dgardenhire/hermes-clearing
-readme: true
+requires_hermes: ">=0.21.6"
+docs_url: https://linchpin.studio/hermes/clearing/manual/
 version: "0.1.0"
-title: The Clearing
-image: https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/992a748464c628796aaff823f3ca422b6b278633/docs/catalog/card.png
+image: https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/SHA_PLACEHOLDER/docs/catalog/card.jpg
 screenshots:
-  - https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/992a748464c628796aaff823f3ca422b6b278633/docs/shots/quick-light.png
-  - https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/992a748464c628796aaff823f3ca422b6b278633/docs/shots/openings-light.png
-  - https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/992a748464c628796aaff823f3ca422b6b278633/docs/shots/words2-dark.png
-  - https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/992a748464c628796aaff823f3ca422b6b278633/docs/shots/pass-dark-green.png
-  - https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/992a748464c628796aaff823f3ca422b6b278633/docs/shots/ask-light.png
-  - https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/992a748464c628796aaff823f3ca422b6b278633/docs/shots/nomodel-dark.png
+  - "https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/SHA_PLACEHOLDER/docs/shots/live/show-me.jpg"
+  - "https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/SHA_PLACEHOLDER/docs/shots/live/read-my-piece.jpg"
+  - "https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/SHA_PLACEHOLDER/docs/shots/live/all-methods.jpg"
+  - "https://raw.githubusercontent.com/Dgardenhire/hermes-clearing/SHA_PLACEHOLDER/docs/shots/live/desk.jpg"
+readme: true
 platforms: []
 known_issues:
   - "Tested on macOS. Windows and Linux are untested."
-  - "Editor passes need a model set in Hermes. Without one, a pass says so and offers Open Settings; Quick check and Better words still work."
+  - "Every editor pass needs a model set in Hermes. Without one, a pass says so and offers Open Settings; Quick check, Other words and Bring in (except a link and dictation) still work."
+  - "Bring in a link needs a web tool set up in Hermes, and Talk it through needs Hermes speech-to-text (or a faster-whisper speech model already downloaded). Without speech-to-text the Talk it through buttons are left out."
+  - "Dictation imports tools.voice_mode.transcribe_recording, which is not in Hermes's public plugin API. It is guarded and falls back to faster-whisper, so a Hermes release that moves it can disable Hermes-backed dictation."
+  - "Run live on a Claude model (Haiku) through Hermes. OpenAI and local-model routes are untested; a model that cannot return the answer format shows a plain message and leaves the page unchanged."
+  - "On Hermes 0.21.6 to 0.22.5 there is no desktop file store: Save as .md and .txt offer Copy instead, and the scene photographs are fetched on each open. Not yet run on a real 0.21.6."
+  - "Colors come from your Hermes theme. Text contrast was measured against stand-ins for Hermes's default light and dark themes and four accents over every scene; an unusual custom theme was not checked."
+  - "Removing the plugin leaves your writing in <HERMES_HOME>/plugin-data/clearing/ until you delete that folder."
 capabilities:
   provides_tools: []
   provides_hooks:

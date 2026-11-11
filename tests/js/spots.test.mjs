@@ -1,4 +1,4 @@
-// opps1, Nov 9: Spot the figures and Find opportunities on the page side. Names and definitions come from the library
+// opps1, Nov 9: Find figures of speech and Where to add a technique on the page side. Names and definitions come from the library
 // (the same JSON files the backend reads), looked up by id; an id the library doesn't have draws nothing.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'

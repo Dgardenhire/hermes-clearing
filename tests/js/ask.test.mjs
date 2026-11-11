@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { QUICK, WORDS, buildTargets, findTargets, libraryMenu, shortFor } from '../../desktop/src/ask.js'
+import { QUICK, WORDS, buildTargets, findTargets, forRoom, libraryCount, libraryMenu, shortFor } from '../../desktop/src/ask.js'
 
 const read = name => JSON.parse(readFileSync(new URL(`../../library/${name}`, import.meta.url)))
 const lib = { methods: read('methods.json'), paths: read('craft-paths.json'), passes: read('passes.json'), add: read('additions.json') }
@@ -138,4 +138,15 @@ test('each craft path says who it is for, and a novelist finds hers', () => {
 test('a few figures carry a narrative example next to the civic ones', () => {
   const ex = Object.fromEntries(lib.add.figures.groups.flatMap(g => g.figures).map(([n, , e]) => [n, e]))
   for (const n of ['alliteration', 'diacope', 'antithesis', 'aposiopesis', 'litotes', 'periodic sentence']) assert.ok(!/council|budget|vote|memo|branch|board/i.test(ex[n]), n)
+})
+
+test('the desk\'s All methods count is what the sheet lists: every section and every figure, from the library files', () => {
+  for (const suggestions of [true, false]) {
+    const menu = libraryMenu(forRoom(targets, suggestions), lib.add)
+    const sum = menu.sections.reduce((n, s) => n + s.items.length, 0) + lib.add.figures.groups.reduce((n, g) => n + g.figures.length, 0)
+    assert.equal(libraryCount(menu), sum)
+    assert.ok(libraryCount(menu) >= 150, `${libraryCount(menu)} items with Suggested text ${suggestions ? 'on' : 'off'}`)
+  }
+  // Suggested text Off leaves out what drafts words, so the count drops with it.
+  assert.ok(libraryCount(libraryMenu(forRoom(targets, false), lib.add)) < libraryCount(libraryMenu(forRoom(targets, true), lib.add)))
 })

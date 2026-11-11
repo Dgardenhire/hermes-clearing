@@ -52,6 +52,14 @@ class GatewayTest(unittest.TestCase):
         self.llm.queue = [({"summary": "ok", "findings": []}, Usage(o=8999))]
         self.assertEqual(self.ask()["data"]["summary"], "ok")
 
+    def test_whole_plain_json_past_the_ceiling_is_kept(self):
+        # Nov 11 live check: a thinking model's plain-text answer, whole, with output tokens past max_tokens
+        self.llm.finish = None
+        self.llm.queue = [('{"summary": "ok", "findings": []}', Usage(o=9500))]
+        self.assertEqual(self.ask()["data"]["summary"], "ok")
+        self.llm.queue = [('{"summary": "half an ans', Usage(o=9500))]
+        self.assertEqual(self.code(), "cut_off")
+
     def test_a_secret_in_the_draft_is_scrubbed_before_sending(self):
         seen = []
         orig = gateway.scrub
@@ -131,6 +139,21 @@ class ApiTest(unittest.TestCase):
         run(api.post_trash(state["current"]["id"]))
         again = run(api.get_state())
         self.assertNotEqual(again["current"]["title"], "The room nobody counts")  # a fresh blank piece, no reseed
+
+    def test_delete_forever_and_empty_trash_routes(self):
+        a = run(api.post_piece({"title": "A", "body": "one"}))
+        b = run(api.post_piece({"title": "B", "body": "two"}))
+        with self.assertRaises(HTTPException) as cm:
+            run(api.post_delete(a["id"]))
+        self.assertEqual(cm.exception.status_code, 400)  # not in the trash
+        run(api.post_trash(a["id"])); run(api.post_trash(b["id"]))
+        r = run(api.post_delete(a["id"]))
+        self.assertEqual([p["id"] for p in r["trash"]], [b["id"]])
+        with self.assertRaises(HTTPException) as cm:
+            run(api.post_delete(a["id"]))
+        self.assertEqual(cm.exception.status_code, 404)
+        r = run(api.post_empty_trash())
+        self.assertEqual((r["deleted"], r["trash"]), (1, []))
 
     def test_a_pass_end_to_end(self):
         piece = run(api.get_state())["current"]

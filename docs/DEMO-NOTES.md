@@ -7,7 +7,7 @@ The hackathon asks for a demo under 90 seconds that shows the plugin working. Ju
 - **The piece:** the sample that ships with the plugin, "The room nobody counts" (343 words, a short essay about a branch library facing cuts). It is The Clearing's own text. It has no client material and nothing about the contest.
 - **Fresh start:** film in a fresh Hermes profile, so the sample opens on its own with the invitation note. If the invitation has already been dismissed, start at step 2 with Cmd E and "quick" instead.
 - **Reset between takes:** title menu, **History**, restore **First words**. Restoring keeps the edited text as a version, so nothing is lost.
-- **Model:** pick a fast model for The Clearing editor (Settings, Models, Auxiliary) and run every model step once before recording, so you know its timing. Cut the wait in editing; leave one second of "Reading your piece" with its counter so viewers see it is live.
+- **Model:** pick a fast model for The Clearing editor (Settings, Model, Auxiliary models) and run every model step once before recording, so you know its timing. Cut the wait in editing; leave one second of "Reading your piece" with its counter so viewers see it is live.
 - **Window:** Hermes at about 1400 x 860, light mode, default accent. The room's layout is tuned for a pane 1,100 px or wider.
 
 ## The shot list (about 85 seconds)

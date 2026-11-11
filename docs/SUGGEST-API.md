@@ -702,7 +702,7 @@ false, "local": false}, "pdf": true, "docx": true, "suggestions": true}`; local 
 
 ---
 
-## 14. `figures` and `opps`: Spot the figures and Find opportunities (targets `figures`, `opportunities`)
+## 14. `figures` and `opps`: Find figures of speech and Where to add a technique (targets `figures`, `opportunities`)
 
 Both read the whole piece (a selection is ignored) and sit beside Read my piece in the room. The model proposes only
 three things: where (a quote of the writer's exact words), which library item (an id) and why. Everything the page
@@ -713,14 +713,14 @@ lookups give the same name, definition and group for every id.
 **Ids.** `figure:<name>` for the 44 figures (`additions.json` `figures`), `method:<id>` for the thirteen methods that
 work on one passage (`library.OPP_METHODS`), `craft:<focus id>` for craft-path steps, the story arc included
 (`craft:human-story:arc-2`), leaving out the whole-piece diagnoses (group "Start here") and the figure families and
-chooser (the figures are listed one by one). Spot the figures takes figure ids only; a bare figure name
+chooser (the figures are listed one by one). Find figures of speech takes figure ids only; a bare figure name
 (`"anaphora"`) counts as that figure, and nothing else is guessed at.
 
 **Checks, in code.** An unknown id, a quote that is not in the piece exactly once, a quote that overlaps an earlier
-mark, or an empty why is dropped and counted. For Spot the figures, a why that denies the figure ("so there is no
+mark, or an empty why is dropped and counted. For Find figures of speech, a why that denies the figure ("so there is no
 unexpected arrangement") and a repetition figure whose quoted words repeat nothing are dropped as `not_there`. For
-Find opportunities, the answer names the strongest line in `keep`; an opportunity on or touching it is dropped
-(`keep_overlap`), and so is a figure that Spot the figures already found on the same words of the same version
+Where to add a technique, the answer names the strongest line in `keep`; an opportunity on or touching it is dropped
+(`keep_overlap`), and so is a figure that Find figures of speech already found on the same words of the same version
 (`already_used`). At most 12 figures and 8 opportunities.
 
 **Result, `figures`:**

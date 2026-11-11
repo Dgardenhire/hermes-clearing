@@ -1,4 +1,4 @@
-"""Write the current commit, its card image and its screenshot URLs into docs/catalog/clearing.yaml (the draft for
+"""Pin the current commit into the sha, the card image and every screenshot URL already listed in docs/catalog/clearing.yaml (the draft for
 plugin-catalog/clearing.yaml), then check the entry with
 Hermes's own catalog validator if it is on this computer (run with a scratch HOME, never the real one).
 
@@ -14,9 +14,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ENTRY = ROOT / "docs" / "catalog" / "clearing.yaml"
-CARD = "docs/catalog/card.png"
 REPO = "Dgardenhire/hermes-clearing"
-SHOTS = ["quick-light", "openings-light", "words2-dark", "pass-dark-green", "ask-light", "nomodel-dark"]  # at most 6
+# Every raw.githubusercontent.com URL in the entry (the card and the screenshots, whatever they are), with its sha slot.
+URL = re.compile(r"https://raw\.githubusercontent\.com/" + re.escape(REPO) + r"/([^/\s\"]+)/([^\s\"]+)")
 
 
 def main() -> int:
@@ -24,18 +24,20 @@ def main() -> int:
     if not re.fullmatch(r"[0-9a-f]{40}", sha):
         print("A full 40-character commit sha is needed.")
         return 1
-    missing = [s for s in SHOTS if not (ROOT / "docs" / "shots" / f"{s}.png").is_file()]
-    missing += [CARD] if not (ROOT / CARD).is_file() else []
-    if missing:
-        print("Missing screenshots:", ", ".join(missing))
-        return 1
     text = ENTRY.read_text(encoding="utf-8")
+    paths = [m.group(2) for m in URL.finditer(text)]
+    shots = [p for p in paths if p.startswith("docs/shots/")]
+    if not any(p.startswith("docs/catalog/") for p in paths) or not shots or len(shots) > 6:
+        print("The entry needs a card image and one to six screenshots on raw.githubusercontent.com.")
+        return 1
+    missing = [p for p in paths if subprocess.run(["git", "cat-file", "-e", f"{sha}:{p}"], cwd=ROOT, capture_output=True).returncode]
+    if missing:
+        print(f"Not in commit {sha[:10]}:", ", ".join(missing))
+        return 1
     text = re.sub(r"^sha: .*$", f"sha: {sha}", text, flags=re.M)
-    text = re.sub(r"^image: .*$", f"image: https://raw.githubusercontent.com/{REPO}/{sha}/{CARD}", text, flags=re.M)
-    shots = "screenshots:\n" + "".join(f"  - https://raw.githubusercontent.com/{REPO}/{sha}/docs/shots/{s}.png\n" for s in SHOTS)
-    text = re.sub(r"^screenshots:(?:\s*\[\]\n|\n(?:  - .*\n)+)", shots, text, flags=re.M)
+    text = URL.sub(lambda m: f"https://raw.githubusercontent.com/{REPO}/{sha}/{m.group(2)}", text)
     ENTRY.write_text(text, encoding="utf-8")
-    print(f"Pinned {sha[:10]} with the card and {len(SHOTS)} screenshots.")
+    print(f"Pinned {sha[:10]} with the card and {len(shots)} screenshots.")
     agent = Path.home() / ".hermes" / "hermes-agent"
     validator = agent / "scripts" / "validate_plugin_catalog.py"
     python = agent / "venv" / "bin" / "python"

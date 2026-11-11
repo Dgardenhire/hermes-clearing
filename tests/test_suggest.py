@@ -441,6 +441,9 @@ class ReadTest(Base):
         self.assertEqual(library.clean_verdict("This is a vivid, compelling piece. It buries its claim. Move it up. Then cut."),
                          "It buries its claim. Move it up. Then cut.")
         self.assertEqual(library.clean_verdict("Lovely piece."), "")
+        # Nov 11 live check: a praise sentence with a comma was cut to "The piece has a strong."
+        self.assertEqual(library.clean_verdict("The piece has a strong, concrete closing line. It buries its claim."),
+                         "It buries its claim. The piece has a strong, concrete closing line.")
 
     def test_tries_stripped_with_suggested_text_off(self):
         store.set_settings({"suggestions": False})

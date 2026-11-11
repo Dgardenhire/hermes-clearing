@@ -1,8 +1,8 @@
 // @jsxRuntime automatic
-// Spot the figures and Find opportunities, the cards. Presentational only: the room owns state, the page and the
+// Find figures of speech and Where to add a technique, the cards. Presentational only: the room owns state, the page and the
 // network. The pattern follows Debate Workbench's figure panel: the name and plain definition (from the library), why
 // it works in this exact line, and Try it, where the writer writes their own version and the coach answers with
-// questions. Find opportunities is a ranked list; the open one carries Show me and Try it myself.
+// questions. Where to add a technique is a ranked list; the open one carries Show me and Try it myself.
 import { useEffect, useRef } from 'react'
 import { canAskCoach, canUseMine, typeLine, whyLabel } from './spots.js'
 import { Icon } from './desk.jsx'
@@ -56,7 +56,7 @@ export function FigureNote({ m, pos, total, used, trying, tryit, onTry, onPrev, 
   )
 }
 
-// Find opportunities: the ranked list, the open one expanded with its actions.
+// Where to add a technique: the ranked list, the open one expanded with its actions.
 export function OppsList({ items, active, onPick, onClose, renderActive, model }) {
   return (
     <div className="cl-note cl-hero cl-spot cl-opps" aria-label="Opportunities">
@@ -87,10 +87,10 @@ export function OppsList({ items, active, onPick, onClose, renderActive, model }
 
 export const CSS = `
 /* Like the read card: never taller than the room above the Ask line; long content scrolls inside the card. */
-.cl-margin .cl-spot{max-height:calc(100vh - 210px);overflow:auto;overscroll-behavior:contain}
+.cl-margin .cl-spot{max-height:var(--cl-margin-max,calc(100vh - 210px));overflow:auto;overscroll-behavior:contain}
 .cl-spot .cl-hero-head{align-items:flex-start}
 .cl-spot-title{flex:1;min-width:0;display:grid;gap:2px}
-.cl-spot-kind{font-size:12.5px;font-weight:500;color:color-mix(in srgb,var(--cl-ink) 78%,transparent)}
+.cl-spot-kind{font-size:12.5px;font-weight:500;color:var(--cl-ink)}
 .cl-spot-def{margin:0 0 10px !important;font-size:14px;line-height:1.5}
 .cl-spot-h{margin:4px 0 4px !important;font-size:12.5px;font-weight:600}
 .cl-spot-quote{white-space:normal;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}

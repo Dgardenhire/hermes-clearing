@@ -136,6 +136,37 @@ def scrub(text: str) -> str:
         raise EditorError("failed", "redaction failed")
 
 
+def format_refused(e: BaseException) -> bool:
+    """True when Hermes or the provider refused the structured-output request itself, not the answer.
+    Hermes declines json_mode on the Claude route before any call; Claude's strict mode can reject a schema."""
+    msg = str(e).lower()
+    if "structured output is supported" in msg:
+        return True
+    return ("400" in msg or "invalid_request" in msg) and any(k in msg for k in (
+        "additionalproperties", "output_config", "response_format", "json_schema", "structured output"))
+
+
+def trace(line: str) -> None:
+    """One line in The Clearing's own data folder: the error's type and a quote-stripped excerpt, never the
+    writer's words. It is how a failure that otherwise reads only "failed" explains itself. Keeps 200 lines."""
+    try:
+        try:
+            from .store import data_dir
+        except ImportError:
+            from store import data_dir  # type: ignore
+        f = data_dir() / "debug.log"
+        old = f.read_text("utf-8").splitlines()[-199:] if f.exists() else []
+        f.write_text("\n".join(old + [time.strftime("%Y-%m-%d %H:%M:%S ") + line[:400]]) + "\n", "utf-8")
+    except Exception:
+        pass
+
+
+def _shape(e: BaseException) -> str:
+    """The error's class and its message with anything quoted removed: a provider can echo the writer's words."""
+    text = re.sub(r"(['\"]).*?\1", "''", str(e).replace("\n", " "))
+    return f"{type(e).__name__}: {text[:200]}"
+
+
 def classify(e: BaseException) -> str:
     if isinstance(e, EditorError):
         return e.code
@@ -182,6 +213,14 @@ class Editor:
     def __init__(self, llm=None):
         self._llm = llm
         self.task = TASK  # dropped to the main model if Hermes never registered the editor's own setting
+        self.plain = False  # set once the provider refuses a format request; the prompt then asks for the JSON
+
+    @staticmethod
+    def _plain_hint(schema) -> str:
+        hint = "\n\nReply with one complete JSON object and nothing else: no code fence, no commentary."
+        if schema is not None:
+            hint += " It must fit this JSON Schema: " + json.dumps(schema, separators=(",", ":"))
+        return hint
 
     @property
     def llm(self):
@@ -198,8 +237,13 @@ class Editor:
         max_tokens = int(request["max_tokens"])
         result, seen = None, None
         attempts = [request.get("schema"), None]  # R11: a reply that misses the schema is retried once as plain JSON
+        if self.plain:
+            attempts = [request.get("schema")]  # plain text already; a second plain try would ask the same thing
+        started_plain = self.plain  # three calls can run at once; each judges from the mode it began in
         while attempts:
             schema = attempts[0]
+            plain = self.plain
+            instructions = request["instructions"] + (self._plain_hint(schema) if plain else "")
             await SLOTS.acquire()
             token = callwatch.begin(call_id)
             try:
@@ -210,8 +254,9 @@ class Editor:
                         except Exception:  # a progress note must never cost the call (or hold its slot)
                             _log.debug("clearing: phase note failed", exc_info=True)
                     result = await asyncio.wait_for(self.llm.acomplete_structured(
-                        instructions=request["instructions"], input=[{"type": "text", "text": body}], system_prompt=system,
-                        json_schema=schema, json_mode=schema is None, max_tokens=max_tokens, timeout=TIMEOUT, task=self.task,
+                        instructions=instructions, input=[{"type": "text", "text": body}], system_prompt=system,
+                        json_schema=None if plain else schema, json_mode=False if plain else schema is None,
+                        max_tokens=max_tokens, timeout=TIMEOUT, task=self.task,
                         purpose="clearing editor pass"), timeout=TIMEOUT + 10)
                 finally:
                     seen = callwatch.end(token, call_id, started)
@@ -219,13 +264,22 @@ class Editor:
                 break
             except asyncio.CancelledError:
                 raise
-            except ValueError as e:
-                if schema is not None and "schema" in str(e).lower() and len(attempts) > 1:
-                    _log.info("clearing: reply missed the schema; asking again for plain JSON")
-                    attempts.pop(0)
+            except Exception as e:
+                trace(f"pass attempt plain={plain} schema={schema is not None}: {_shape(e)}")
+                if not started_plain and not plain and format_refused(e):
+                    # The provider refused the format request itself. Ask in plain words from here on and
+                    # read the JSON out of the reply, the way a plain prompt does.
+                    _log.info("clearing: the provider refused a format request; asking for JSON in plain text")
+                    self.plain = True
+                    attempts = [request.get("schema")]
                     continue
-                raise EditorError(classify(e), type(e).__name__, rate_limited(e)) from e
-            except Exception as e:  # every model failure reaches the page as a plain message
+                if isinstance(e, ValueError):
+                    if schema is not None and "schema" in str(e).lower() and len(attempts) > 1:
+                        _log.info("clearing: reply missed the schema; asking again for plain JSON")
+                        attempts.pop(0)
+                        continue
+                    raise EditorError(classify(e), type(e).__name__, rate_limited(e)) from e
+                # every other model failure reaches the page as a plain message
                 if type(e).__name__ == "PluginLlmTrustError" and self.task and "auxiliary task" in str(e):
                     _log.warning("clearing: the clearing_editor setting is not registered; using the main model")
                     self.task = None
@@ -247,15 +301,27 @@ class Editor:
         # Cut-off, three ways: the hook's finish reason, the token ceiling, then the parse. A clean finish
         # reported by the hook wins over the ceiling: a reasoning model counts its thinking as output, so a
         # complete answer can land near max_tokens and must not be thrown away.
+        # Written only when the answer is then refused, so a normal pass leaves no new file behind.
+        note = (f"pass answered plain={self.plain} parsed={type(getattr(result, 'parsed', None)).__name__} "
+                f"text={len(getattr(result, 'text', '') or '')} chars finish={finish} tokens_out={tokens_out}/{max_tokens}")
         reason = str(finish or "").lower()
         if reason in CUT_REASONS:
+            trace(note + " -> cut off")
             raise EditorError("cut_off", f"finish_reason={finish}")
-        if reason not in CLEAN_REASONS and isinstance(tokens_out, int) and tokens_out >= CEILING * max_tokens:
-            raise EditorError("cut_off", f"tokens_out={tokens_out}")
         data = getattr(result, "parsed", None)
-        if not isinstance(data, dict):
+        from_text = not isinstance(data, dict)
+        if from_text:
             data = parse_json(getattr(result, "text", "") or "")
+        # At the ceiling with no finish reason: an answer the provider parsed is still refused (it may have cut a list
+        # short and closed it), but raw text that parses as a whole object is kept, because cut text cannot close its
+        # braces. A model that thinks counts its thinking as output, so a finished answer can pass max_tokens (Nov 11
+        # live check: Find figures of speech on Haiku, plain JSON, 2,623 characters, 5,889 tokens of 5,000, refused).
+        if not (from_text and isinstance(data, dict)) and reason not in CLEAN_REASONS and isinstance(tokens_out, int) \
+                and tokens_out >= CEILING * max_tokens:
+            trace(note + " -> cut off at the ceiling")
+            raise EditorError("cut_off", f"tokens_out={tokens_out}")
         if not isinstance(data, dict):
             text = (getattr(result, "text", "") or "").rstrip()
+            trace(note + f" -> no JSON object (braces {text.count('{')} open, {text.count('}')} closed)")
             raise EditorError("cut_off" if text.count("{") > text.count("}") else "unreadable", "no JSON object")
         return {"data": data, **meta}

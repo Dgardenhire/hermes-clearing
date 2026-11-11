@@ -8,14 +8,17 @@ export const Icon = ({ name }) => (
   <svg className="cl-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d={ICON[name] || ''} /></svg>
 )
 
-export function Desk({ quickCount = 0, canRead = true, canAsk = true, canRewrite = false, canTalk = false, canBringIn = true, busy = false, resting = true, narrow = false, compact = false, modKey = 'Ctrl E', onRead, onPanel, onAsk, onRewrite, onBringIn, onTalk, onQuick, onFigures, onOpps }) {
-  const rows = deskRows({ quickCount, canRead, canAsk, canRewrite, canTalk, canBringIn, busy, modKey })
-  const act = { read: onRead, figures: onFigures, opps: onOpps, ask: onAsk, rewrite: onRewrite, bring: onBringIn, talk: onTalk, quick: onQuick }
+export function Desk({ quickCount = 0, canRead = true, canAsk = true, canRewrite = false, canTalk = false, canBringIn = true, busy = false, resting = true, narrow = false, compact = false, modKey = 'Ctrl E', methodCount = 0, onLibrary, onRead, onPanel, onAsk, onRewrite, onBringIn, onTalk, onQuick, onFigures, onOpps }) {
+  const all = deskRows({ quickCount, canRead, canAsk, canRewrite, canTalk, canBringIn, busy, modKey, methodCount: onLibrary ? methodCount : 0 })
+  const act = { library: onLibrary, read: onRead, figures: onFigures, opps: onOpps, ask: onAsk, rewrite: onRewrite, bring: onBringIn, talk: onTalk, quick: onQuick }
   const faded = !resting
   if (narrow) {
-    // Under 860 px: the bar keeps its five labeled buttons; Spot the figures and Find opportunities sit in a strip
+    // Under 860 px: the bar keeps its five labeled buttons; Find figures of speech and Where to add a technique sit in a strip
     // just above it, beside Read my piece's column, while Read my piece can run.
-    const beside = (rows[0] && rows[0].id === 'read' && rows[0].beside) || []
+    // All methods joins that strip, full width, so the bar itself stays at five.
+    const rows = all.filter(r => r.id !== 'library')
+    const lib = all.find(r => r.id === 'library')
+    const beside = [...((rows[0] && rows[0].id === 'read' && rows[0].beside) || []), ...(lib ? [lib] : [])]
     return (
       <>
       {beside.length ? (
@@ -37,6 +40,7 @@ export function Desk({ quickCount = 0, canRead = true, canAsk = true, canRewrite
       </>
     )
   }
+  const rows = all
   return (
     <nav className="cl-desk" aria-label={COPY.desk.label} data-faded={faded ? '' : undefined} data-compact={compact ? '' : undefined} inert={faded || undefined}>
       {rows.map(r => r.id === 'read' ? (
@@ -85,6 +89,8 @@ export const CSS = `
 .cl-desk-strip{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin-bottom:4px;background:var(--cl-surface);border-radius:var(--cl-radius);box-shadow:var(--cl-shadow);transition:opacity 200ms ease;font-family:var(--cl-sans)}
 .cl-desk-strip[data-faded]{opacity:0;pointer-events:none}
 .cl-desk-strip .cl-desk-side{justify-content:center}
+.cl-desk-strip .cl-desk-side[data-id=library]{grid-column:1/-1}
+.cl-desk-row[data-id=library] .cl-desk-label{font-variant-numeric:tabular-nums}
 .cl-desk-row{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;font:inherit;font-size:14px;font-weight:500;line-height:1.3;color:var(--cl-ink);background:none;border:0;padding:10px 12px;cursor:pointer;text-align:left;transition:background-color 120ms ease}
 .cl-desk-row:hover{background:var(--cl-wash)}
 .cl-desk-label{min-width:0;overflow-wrap:anywhere}

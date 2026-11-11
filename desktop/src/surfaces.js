@@ -20,8 +20,8 @@ export const COPY = {
   desk: {
     label: 'Your editor',
     read: 'Read my piece',
-    figures: 'Spot the figures',
-    opps: 'Find opportunities',
+    figures: 'Find figures of speech',
+    opps: 'Where to add a technique',
     reading: 'Your editor is reading',
     panel: "Get three editors' reads",
     ask: 'Ask the editor',
@@ -29,6 +29,7 @@ export const COPY = {
     bring: 'Bring in',
     talk: 'Talk it through',
     quick: 'Quick check',
+    library: 'All methods',
   },
   blank: {
     title: 'Start writing, or pick a way in',
@@ -101,9 +102,16 @@ export const ICON = {
   cut: 'M6 6a3 3 0 1 0 0 .01 M6 18a3 3 0 1 0 0 .01 M8.1 8.1L20 20 M8.1 15.9L20 4',
   figures: 'M9 11l-6 6v3h9l3-3 M22 12l-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4',
   opps: 'M12 2a10 10 0 1 0 0 20a10 10 0 1 0 0-20z M16.2 7.8l-2.1 6.4-6.4 2.1 2.1-6.4z',
+  library: 'M8 6h13 M8 12h13 M8 18h13 M3 6h.01 M3 12h.01 M3 18h.01',
 }
 
 export const plural = (n, one, many) => `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`
+
+// The desk's way into the whole library: "All 159 methods", counted from the library itself (ask.js libraryCount).
+export function libraryLabel(n) {
+  const count = Math.max(0, Math.floor(Number(n) || 0))
+  return count ? `All ${count.toLocaleString('en-US')} methods` : COPY.desk.library
+}
 
 export function quickLabel(n) {
   const count = Math.max(0, Math.floor(Number(n) || 0))
@@ -112,11 +120,15 @@ export function quickLabel(n) {
 
 // The desk at rest, top to bottom (and left to right in the narrow bar). A row whose action can't run here is left
 // out rather than shown dead; Read my piece is never left out while it runs.
-export function deskRows({ quickCount = 0, canRead = true, canAsk = true, canRewrite = false, canTalk = false, canBringIn = true, busy = false, modKey = 'Ctrl E' } = {}) {
+export function deskRows({ quickCount = 0, canRead = true, canAsk = true, canRewrite = false, canTalk = false, canBringIn = true, busy = false, modKey = 'Ctrl E', methodCount = 0 } = {}) {
   const rows = []
-  // Spot the figures and Find opportunities sit beside Read my piece, in its lead; they run only when it can.
+  // Find figures of speech and Where to add a technique sit beside Read my piece, in its lead; they run only when it can.
   if (canRead || busy) rows.push({ id: 'read', label: COPY.desk.read, short: COPY.desk.read, tight: COPY.desk.read, icon: 'read', primary: true, busy: !!busy, sub: { id: 'panel', label: COPY.desk.panel },
     beside: canRead && !busy ? [{ id: 'figures', label: COPY.desk.figures, icon: 'figures' }, { id: 'opps', label: COPY.desk.opps, icon: 'opps' }] : [] })
+  // All methods, right under Read my piece, so a writer sees the whole library is there to run by name. Only when the
+  // room passes the count; the narrow bar keeps its five buttons and shows this one in the strip above it.
+  const methods = Math.max(0, Math.floor(Number(methodCount) || 0))
+  if (methods) rows.push({ id: 'library', label: libraryLabel(methods), short: COPY.desk.library, tight: libraryLabel(methods), icon: 'library', count: methods })
   if (canAsk) rows.push({ id: 'ask', label: COPY.desk.ask, short: COPY.desk.ask, tight: COPY.desk.ask, icon: 'ask', key: modKey })
   if (canRewrite) rows.push({ id: 'rewrite', label: COPY.desk.rewrite, short: COPY.desk.rewrite, tight: 'Rewrite', icon: 'type' })
   if (canBringIn) rows.push({ id: 'bring', label: COPY.desk.bring, short: COPY.desk.bring, tight: COPY.desk.bring, icon: 'bring' })

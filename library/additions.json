@@ -646,7 +646,7 @@
    {
     "id": "figures",
     "kind": "figures",
-    "title": "Spot the figures",
+    "title": "Find figures of speech",
     "detail": "The figures of speech your piece already uses, marked in your page, each with what it is and why it works or doesn't in that line.",
     "hidden": true,
     "aliases": "",
@@ -655,7 +655,7 @@
    {
     "id": "opportunities",
     "kind": "opps",
-    "title": "Find opportunities",
+    "title": "Where to add a technique",
     "detail": "Places where a figure, a story, a method or a craft step from the library would lift your piece, each pinned to your words, ranked.",
     "hidden": true,
     "aliases": "",

@@ -154,3 +154,10 @@ export function libraryMenu(targets, add) {
   }))
   return { sections, figures: { title: add.figures.title, detail: add.figures.detail, groups: figures } }
 }
+
+// How many items All methods lists: every section's items plus every figure, the same numbers its headers show.
+// The desk's All methods button says this count, so it can never drift from the library.
+export function libraryCount(menu) {
+  const items = menu.sections.reduce((n, sec) => n + sec.items.length, 0)
+  return items + menu.figures.groups.reduce((n, g) => n + g.figures.length, 0)
+}

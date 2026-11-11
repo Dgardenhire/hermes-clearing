@@ -7,7 +7,7 @@ description: A writing room for Hermes. Write in a quiet page, run a built-in qu
 author: Damon Gardenhire
 license: PolyForm-Shield-1.0.0
 kind: standalone
-requires_hermes: ">=0.22.6"
+requires_hermes: ">=0.21.6"
 tags: [writing, editing, desktop]
 platforms: []
 capabilities: []

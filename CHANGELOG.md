@@ -1,11 +1,33 @@
 # Changelog
 
-## Unreleased: Spot the figures and Find opportunities (opps1), November 9, 2026
+Nothing here has been published yet. Every entry below, including the 0.1.0 section, ships together as version 0.1.0, The Clearing's first public release, once the repository is public and the catalog entry is pinned to a commit.
+
+## Unreleased: release fixes, November 10-11, 2026
+
+- **Read my piece works on Claude models.** On the Claude route, Claude's strict mode rejected the answer format with a 400, and the fallback asked Hermes for json_mode, which Hermes refuses on that route, so a pass failed after about 99 seconds. The Clearing now falls back to a plain request that carries the format in the instructions and reads the JSON out of the reply. Checked live on Haiku: notes in 26 seconds.
+- **debug.log.** When a pass fails, one line goes to `<HERMES_HOME>/plugin-data/clearing/debug.log`: the time, the kind of error and an excerpt of the message with anything quoted removed, never your words. It keeps the last 200 lines.
+- **Runs on Hermes 0.21.6 and later** (`requires_hermes ">=0.21.6"`, down from 0.22.6). The one newer feature it uses, Hermes's desktop file store (0.22.6), is checked before use. On 0.21.6 to 0.22.5, Save as .md and .txt say Hermes cannot save files for plugins and offer Copy instead, and the scene photographs are fetched again on each open; everything else is the same. Not yet run on a real 0.21.6.
+- **Delete forever.** In the Trash, each piece has **Delete forever**, and **Empty the trash** clears them all. Both ask first. Deleting removes the piece, its versions, its pass records and the suggestions you kept or skipped, with SQLite's secure delete on, so the words don't stay in the file. Rules you kept from the piece stay in Your guidance. Only a piece already in the trash can go, and not while the editor is reading it.
+- **Readable buttons in every theme.** In dark mode, Use this, Open Settings, Close and every other main button measured 3.58:1, below the 4.5:1 that WCAG AA asks for. A main button's text is now white or black, whichever its color needs, so every accent in light and dark clears 4.5:1. In light mode the button keeps its deeper ink, now mixed from the theme's own text color instead of a fixed navy. Struck-through words and proposed cuts, the editor's words in the page, the change numbers in the margin and the method labels on the opportunities list were also too faint over some scenes or accents; measured again over all four scenes, both themes and four accents, every one now clears 4.5:1. (The page behind the welcome card stays faded on purpose: it is inactive until the card closes.)
+- **Focus you can see in the page.** The title and the page show a thin accent rule in the left margin while they have the keyboard, and the Ask line underlines in the accent.
+- **A finished answer is kept.** On a model that thinks before it answers (Haiku), Find figures of speech on the 343-word sample came back finished but was refused as "cut off, try a shorter piece", because the thinking counted toward the length limit. An answer that reads as a whole is now kept. Test added.
+- **Praise kept whole.** When Read my piece names what already works, it keeps the whole sentence. It used to cut at the first comma, so a live read on Haiku showed "The piece has a strong." Test added.
+- **The whole library, in sight.** The desk shows **All methods** right under Read my piece, with the number of items the library holds (159, or 150 with Suggested text Off), counted from the library itself. It opens the same list as the title menu.
+- **Plainer labels beside Read my piece.** The two readings there are now **Find figures of speech** and **Where to add a technique**.
+- **The manual, one click away.** The title menu ends with **The manual**, which opens the manual on linchpin.studio in your browser.
+
+## Unreleased: opens faster, November 10, 2026
+
+- **The room opens at once.** The page used to show an empty room until its backend answered (a few seconds on a cold open, while Hermes starts it). Now it draws the piece you had open last time straight away, from a small copy it keeps in Hermes's plugin storage, and swaps in the fresh one when the backend answers. Until then the page is read-only and Finish waits, so nothing is typed onto or exported from words that may be out of date. The copy holds only what the first screen needs (the piece's title and words, the piece list's titles, the trash count and the room settings), and a piece longer than about 200 KB is not kept.
+- The page asks for dictation and your own scene picture at the same time as the piece, instead of after it.
+- **A smaller bundle.** desktop/plugin.js is about 650 KB instead of 1.6 MB. The three scene photographs come from The Clearing's backend through its own route (`GET /scene/builtin/{name}`) and are kept in the page's data folder after the first open; the typeface stays in the bundle, as WOFF2 (the same glyphs, less than half the size), so your words never wait on it.
+
+## Unreleased: Find figures of speech and Where to add a technique (opps1), November 9, 2026
 
 Beside **Read my piece**, two new readings of your own draft. Both mark your words in the page; neither changes them.
 
-- **Spot the figures** marks the figures of speech your piece already uses. Open any mark: the figure's name and plain definition from The Clearing's library, the words it is in, and why it works in that line, or why it doesn't land yet. **Try it** lets you write your own version of the line; the coach answers with what works and a few questions, never with wording. **Use mine** puts your version in the page, and **Undo** takes it out.
-- **Find opportunities** lists, ranked, the places where one method, figure or craft step from the library would help: a person where the piece only asserts, a list that could build into a litany, a paragraph that wants a concrete example. Each names the item, says why here, and offers **Show me** (a draft in your words, with a bracketed blank for anything only you know, and the usual **Use this** and **Undo**) or **Try it myself**.
+- **Find figures of speech** marks the ones your piece already uses. Open any mark: the figure's name and plain definition from The Clearing's library, the words it is in, and why it works in that line, or why it doesn't land yet. **Try it** lets you write your own version of the line; the coach answers with what works and a few questions, never with wording. **Use mine** puts your version in the page, and **Undo** takes it out.
+- **Where to add a technique** lists, ranked, the places where one method, figure or craft step from the library would lift the piece: a person where the piece only asserts, a list that could build into a litany, a paragraph that wants a concrete example. Each names the item, says why here, and offers **Show me** (a draft in your words, with a bracketed blank for anything only you know, and the usual **Use this** and **Undo**) or **Try it myself**.
 - Your model proposes only where, which item and why. Names and definitions always come from the library; an item the library doesn't have, or words that aren't in your piece, are dropped before you see anything. Nothing touches the strongest line.
 - Each result is kept for that version of your piece: run either again on the same words and it opens at once.
 - The figures now include **simile** and **metaphor** (44 in all), each with a definition and example written for The Clearing.
@@ -91,7 +113,7 @@ Three stand-in writers (a retired teacher writing memoir, a reporter on deadline
 
 ## 0.1.0, November 2026
 
-The first release of The Clearing for Hermes Desktop, ported from The Clearing web app. Licensed under the PolyForm Shield License 1.0.0.
+The first version of The Clearing for Hermes Desktop, ported from The Clearing web app. Licensed under the PolyForm Shield License 1.0.0.
 
 ### The room
 - One page set in Libre Caslon Text inside a scene that follows Hermes's light and dark themes: Snow Light, Quiet Marsh or a plain page by day, Night Tide at night. Larger text and stronger contrast are one click away.

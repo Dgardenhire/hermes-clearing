@@ -17,10 +17,12 @@ test('note 1: every scene is its own choice in dark mode too; the default follow
   assert.deepEqual(SCENES.map(([, l]) => l), ['Snow Light', 'Quiet Marsh', 'Night Tide', 'Plain page', 'Your own picture'])
   const css = read('../../desktop/src/styles.js')
   // The bug: dark mode swapped Quiet Marsh (and every scene) for Night Tide.
-  assert.ok(!/:root\.dark \.cl-room\[data-scene=marsh\]\{--cl-scene:url\(\$\{SCENE_DARK\}\)/.test(css))
-  assert.match(css, /:root\.dark \.cl-room\[data-scene=marsh\]\{--cl-scene:url\(\$\{SCENE_MARSH\}\)/)
-  assert.match(css, /:root\.dark \.cl-room\[data-scene=snow\]\{--cl-scene:url\(\$\{SCENE_LIGHT\}\)/)
-  assert.match(css, /\.cl-room\[data-scene=tide\]\{--cl-scene:url\(\$\{SCENE_DARK\}\)/)
+  assert.ok(!/:root\.dark \.cl-room\[data-scene=marsh\]\{--cl-scene:\$\{SCENE_DARK\}/.test(css))
+  assert.match(css, /:root\.dark \.cl-room\[data-scene=marsh\]\{--cl-scene:\$\{SCENE_MARSH\}/)
+  assert.match(css, /:root\.dark \.cl-room\[data-scene=snow\]\{--cl-scene:\$\{SCENE_LIGHT\}/)
+  assert.match(css, /\.cl-room\[data-scene=tide\]\{--cl-scene:\$\{SCENE_DARK\}/)
+  // Each name reads its own photograph (scenes.js sets --cl-img-<name> on the room as the picture loads).
+  assert.match(css, /SCENE_LIGHT = 'var\(--cl-img-snow,none\)', SCENE_MARSH = 'var\(--cl-img-marsh,none\)', SCENE_DARK = 'var\(--cl-img-tide,none\)'/)
 })
 
 test('note 2: the built-in tools say what built in means, and "On this computer" is gone', () => {

@@ -21,6 +21,48 @@ class StoreTest(unittest.TestCase):
         q = store.get_piece(p["id"])
         self.assertEqual((q["title"], q["body"]), ("New title", "Body"))
 
+    def test_delete_forever_removes_the_piece_and_everything_kept_about_it(self):
+        keep = store.create_piece("Keep", "other words")
+        p = store.create_piece("Gone", "secret words")
+        store.save_piece(p["id"], body="secret words, more of them")
+        store.add_version(p["id"], "idle")
+        done = store.add_pass(p["id"], "pass:weakest", "findings", {"q": "x"})
+        store.finish_pass(done["id"], status="done", result={"findings": []})
+        store.add_decisions(p["id"], [{"kind": "rewrite", "original": "secret", "chosen": "hidden", "choice": "kept"}])
+        rule = store.add_rule("voice", "Short sentences.", piece_id=p["id"])
+        store.meta_set("last", p["id"])
+        with self.assertRaises(ValueError):  # not in the trash yet
+            store.delete_piece(p["id"])
+        store.trash_piece(p["id"])
+        store.delete_piece(p["id"])
+        with self.assertRaises(LookupError):
+            store.get_piece(p["id"])
+        c = store.db()
+        for table in ("versions", "passes", "decisions"):
+            self.assertEqual(c.execute(f"SELECT COUNT(*) FROM {table} WHERE piece_id=?", (p["id"],)).fetchone()[0], 0, table)
+        self.assertIsNone(store.get_rule(rule["id"])["piece_id"])  # the writer's rule stays, unlinked
+        self.assertIsNone(store.meta_get("last"))
+        self.assertEqual(store.get_piece(keep["id"])["body"], "other words")
+        raw = (store.data_dir() / "clearing.db").read_bytes() if (store.data_dir() / "clearing.db").exists() else b""
+        self.assertNotIn(b"secret words", raw)
+
+    def test_empty_trash_deletes_only_trashed_pieces(self):
+        a, b, c = (store.create_piece(t, t) for t in ("one", "two", "three"))
+        store.trash_piece(a["id"]); store.trash_piece(b["id"])
+        self.assertEqual(store.empty_trash(), 2)
+        self.assertEqual(store.list_pieces(trashed=True), [])
+        self.assertEqual([x["id"] for x in store.list_pieces()], [c["id"]])
+        self.assertEqual(store.empty_trash(), 0)
+
+    def test_a_piece_being_read_is_not_deleted(self):
+        p = store.create_piece("Busy", "words")
+        store.add_pass(p["id"], "pass:weakest", "findings", {"q": "x"})
+        store.trash_piece(p["id"])
+        with self.assertRaises(ValueError):
+            store.delete_piece(p["id"])
+        self.assertEqual(store.empty_trash(), 0)
+        self.assertEqual(store.get_piece(p["id"])["title"], "Busy")
+
     def test_trash_is_restorable_and_never_deletes(self):
         p = store.create_piece("Gone", "words")
         store.trash_piece(p["id"])

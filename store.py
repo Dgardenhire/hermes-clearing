@@ -19,7 +19,10 @@ store only keeps them, per piece and per version, and drops any that fall outsid
 
 A piece can be marked as a voice sample (``pieces.voice``): the writer's own words that sound like them.
 
-Nothing is ever deleted outright. "Move to trash" sets ``trashed``; Restore clears it.
+"Move to trash" sets ``trashed``; Restore clears it. Only a piece already in the trash can be deleted forever
+(``delete_piece``, ``empty_trash``): that removes the piece, its versions, its pass records and its kept or skipped
+suggestions, with SQLite's secure delete on and the write-ahead log truncated, so the words do not linger in the file.
+Rules the writer kept from that piece stay (they are the writer's, across pieces) but no longer point at it.
 """
 
 from __future__ import annotations
@@ -286,6 +289,53 @@ def restore_piece(piece_id) -> dict:
     p = get_piece(piece_id)
     _write(lambda c: c.execute("UPDATE pieces SET trashed=NULL, updated=? WHERE id=?", (now(), p["id"])))
     return _piece_meta(get_piece(p["id"]))
+
+
+def _purge(c, piece_id) -> None:
+    for table in ("versions", "passes", "decisions"):
+        c.execute(f"DELETE FROM {table} WHERE piece_id=?", (piece_id,))
+    c.execute("UPDATE guidance SET piece_id=NULL WHERE piece_id=?", (piece_id,))
+    c.execute("DELETE FROM meta WHERE key='last' AND value=?", (json.dumps(piece_id),))
+    c.execute("DELETE FROM pieces WHERE id=?", (piece_id,))
+
+
+def _scrub(conn) -> None:
+    """After a delete: fold the write-ahead log back in and empty it, so deleted pages are not left in the -wal file."""
+    try:
+        with _lock:
+            conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+    except sqlite3.OperationalError:  # a reader holds the log; secure delete already zeroed the pages
+        pass
+
+
+def delete_piece(piece_id) -> int:
+    """Delete one trashed piece forever, with everything kept about it. A piece outside the trash is refused."""
+    p = get_piece(piece_id)
+    if not p["trashed"]:
+        raise ValueError("Move this piece to the trash first. Only a piece in the trash can be deleted forever.")
+    if running_pass(p["id"]):
+        raise ValueError("The editor is still reading this piece. Try again when it finishes.")
+
+    def go(c):
+        c.execute("PRAGMA secure_delete=ON")
+        _purge(c, p["id"])
+    _write(go)
+    _scrub(db())
+    return 1
+
+
+def empty_trash() -> int:
+    """Delete every piece in the trash forever. Returns how many went. A piece the editor is still reading stays."""
+    ids = [r["id"] for r in list_pieces(trashed=True) if not running_pass(r["id"])]
+
+    def go(c):
+        c.execute("PRAGMA secure_delete=ON")
+        for piece_id in ids:
+            _purge(c, piece_id)
+    if ids:
+        _write(go)
+        _scrub(db())
+    return len(ids)
 
 
 # ---------- versions ----------

@@ -12,6 +12,14 @@ export function placeNote({ passageTop, viewTop, viewBottom, marginTop, noteHeig
   return Math.max(0, Math.round(top - marginTop))
 }
 
+// The tallest a list in the margin (Read my piece's changes, the figures, the techniques) may grow and still end
+// above the Ask line. Measured from the pane the room really has: the old 100vh rule counted Hermes's own window
+// chrome as room, so with four or five notes the list ran under the Ask line (live shot, Nov 11, 2026).
+// viewHeight: the page's scrolling area; marginOffset: where the margin's first card starts inside it, unscrolled.
+export function marginMax({ viewHeight, marginOffset, askRoom, floor = 160 }) {
+  return Math.max(floor, Math.round((Number(viewHeight) || 0) - (Number(marginOffset) || 0) - (Number(askRoom) || 0)))
+}
+
 // Walking a pass's notes again after its summary: every note the writer left or kept goes back to open, so it is
 // underlined and the page can scroll to it. A note on a passage the writer changed stays set aside.
 export function reopen(marks, ids) {

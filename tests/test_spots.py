@@ -1,4 +1,4 @@
-"""opps1, Nov 9: Spot the figures and Find opportunities. The model proposes only the anchors (quotes), the library ids
+"""opps1, Nov 9: Find figures of speech and Where to add a technique. The model proposes only the anchors (quotes), the library ids
 and the why; names and definitions come from the library; ids and anchors are checked in code and anything that
 doesn't match is dropped. Results are kept per piece version. Show me runs the existing apply flow, Try it the coach."""
 import json

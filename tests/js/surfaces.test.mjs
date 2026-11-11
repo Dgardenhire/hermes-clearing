@@ -3,7 +3,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { COPY, ICON, LIMIT, addsLine, allCopy, blanks, clock, counter, deskRows, progressLine, quickLabel, readView, sentenceAt, validateStart } from '../../desktop/src/surfaces.js'
+import { COPY, ICON, LIMIT, addsLine, allCopy, blanks, clock, counter, deskRows, libraryLabel, progressLine, quickLabel, readView, sentenceAt, validateStart } from '../../desktop/src/surfaces.js'
 
 const read = p => readFileSync(new URL(p, import.meta.url), 'utf8')
 const FILES = ['welcome.jsx', 'desk.jsx', 'start.jsx', 'read.jsx', 'surfaces.js', 'authorship.js']
@@ -26,6 +26,8 @@ test('the desk lists its rows in order, Read my piece first and Quick check last
   assert.deepEqual(rows.map(r => r.label), ['Read my piece', 'Ask the editor', 'Bring in', 'Talk it through', 'Quick check: 3 things to look at'])
   assert.equal(rows.filter(r => r.primary).length, 1)
   assert.equal(rows[0].sub.label, "Get three editors' reads")
+  // The two readings beside Read my piece say what they do in plain words: figures of speech, not numbers.
+  assert.deepEqual(rows[0].beside.map(x => x.label), ['Find figures of speech', 'Where to add a technique'])
   assert.equal(rows[1].key, '⌘E')
   const without = deskRows({ quickCount: 3, canTalk: false })
   assert.deepEqual(without.map(r => r.id), ['read', 'ask', 'bring', 'quick'])
@@ -42,6 +44,18 @@ test('the desk lists its rows in order, Read my piece first and Quick check last
   // Five rows at most: the narrow bar has five labeled buttons.
   assert.ok(rows.length <= 5)
   for (const r of rows) assert.ok(ICON[r.icon], r.id)
+})
+
+test('All methods sits right under Read my piece with the library\'s own count, and only when the room passes one', () => {
+  const rows = deskRows({ quickCount: 2, methodCount: 159 })
+  assert.deepEqual(rows.map(r => r.id), ['read', 'library', 'ask', 'bring', 'quick'])
+  assert.equal(rows[1].label, 'All 159 methods')
+  assert.equal(rows[1].tight, 'All 159 methods')
+  assert.ok(ICON[rows[1].icon])
+  assert.equal(libraryLabel(1500), 'All 1,500 methods')
+  assert.equal(libraryLabel(0), 'All methods')
+  assert.ok(!deskRows({ methodCount: 0 }).some(r => r.id === 'library'))
+  assert.ok(!deskRows({}).some(r => r.id === 'library'))
 })
 
 test('Quick check says how many things to look at: none, one, three', () => {

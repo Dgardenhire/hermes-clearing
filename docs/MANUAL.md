@@ -94,10 +94,11 @@ Click the title in the top line.
 - **History**: every saved version of this piece. **Restore** brings one back. What is on the page now is kept as a version first. History also says how many editor passes ran on this piece and about how many words your model read and wrote for them.
 - **The room**: the scene (Snow Light, Quiet Marsh, Night Tide, a plain page, or **Your own picture**: a JPEG, PNG or WebP up to 6 MB, which you can change or remove), larger text, stronger contrast, and **Suggested text** shown or off. Every scene stays your choice in light and dark mode; dark mode only deepens the veil over a light picture.
 - **Show the shape**: one bar per paragraph, with a tick where notes are. Click a bar to go to that paragraph.
-- **Move to trash** and **Trash**: nothing in the trash is deleted. Restore it any time.
+- **Move to trash** and **Trash**: a piece in the trash stays until you restore it or choose **Delete forever** (or **Empty the trash**). Both ask first; a deleted piece, its versions and its editor history cannot be brought back.
 - **Use as a voice sample**: mark a piece you wrote yourself, so the voice check and your guidance can learn from it.
 - **Your guidance** and **All methods**: every pass, method, craft path and figure by group, each one click away. Each craft path says who it is for. Writing fiction? **Find the human story** is for fiction, memoir and personal essays: scenes, stakes, the turn, the ending, whose story it is.
 - **About The Clearing**: what The Clearing does, where your words go when you ask the editor, and software credits.
+- **The manual**: opens this manual on linchpin.studio in your browser.
 
 ## Finish
 
@@ -110,7 +111,7 @@ Click **Finish** in the top right. Press Escape to close this or any other sheet
 
 ## Choose the editor's model
 
-The Clearing uses your main Hermes model unless you pick another. To pick one: Settings, Models, Auxiliary, **The Clearing editor**.
+The Clearing uses your main Hermes model unless you pick another. To pick one: Settings, Model, Auxiliary models, **The Clearing editor**.
 
 ## When something goes wrong
 

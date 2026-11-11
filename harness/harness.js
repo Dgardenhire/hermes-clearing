@@ -5,9 +5,9 @@
 //   step=<n> (Leave it n times after the state)
 //   state=longquick|longwalk|longshape|rewalk|fixmyself|escask: the note walk on a piece several screens tall
 //   state=askfiction|libfiction: the Ask line and All methods for a novelist
-//   state=spot|spottry|spotcoach|spotmine|spotnext|opps|oppshow|oppcut|opplitany|oppused|oppundo|opptry: Spot the figures and Find opportunities (opps1)
+//   state=spot|spottry|spotcoach|spotmine|spotnext|opps|oppshow|oppcut|opplitany|oppused|oppundo|opptry: Find figures of speech and Where to add a technique (opps1)
 //   state=flip|promise|draft|voice|panel|panelwalk|debate|debate3|debating|lessons|guidance|choose|across|library|figures|yourguidance|home|homedone|
-//         wording|wording2|phrase|cuts|cuts2|words|words2|wordsoff|invite|quick|quick2|pass|note|notewalk|changes|apply|openings|working|nomodel|cutoff|off|ask|askempty|menu|finish|history|about
+//         wording|wording2|phrase|cuts|cuts2|words|words2|wordsoff|invite|quick|quick2|pass|note|notewalk|changes|apply|openings|working|nomodel|cutoff|off|ask|askempty|menu|finish|history|about|trash|trashask|trashall
 import { createRoot } from 'react-dom/client'
 import { jsx } from 'react/jsx-runtime'
 import plugin from '../desktop/plugin.js'
@@ -23,7 +23,7 @@ const MODEL = 'hermes-4-405b'
 
 const LONG = q.get('long') || /^(longquick|longwalk|longshape|rewalk|fixmyself)$/.test(q.get('state') || '')
 const sample = await (await fetch(LONG ? './long.json' : '../library/sample.json')).json()
-// Spot the figures, Find opportunities, their Show me answers and the coach's replies: real model output on the sample
+// Find figures of speech, Where to add a technique, their Show me answers and the coach's replies: real model output on the sample
 // piece (opps-fixtures.json, from the opps1 bench), served as the model's answers.
 const OPPS = await (await fetch('./opps-fixtures.json')).json()
 const now = () => Date.now() / 1000
@@ -74,8 +74,8 @@ const LONG_ANSWERS = {
   ], 'quote').map(({ quote, note, start, end }) => ({ quote, note, start, end })) } }),
 }
 const ANSWERS = {
-  'figures': () => ({ kind: 'figures', title: 'Spot the figures', result: OPPS.figures }),
-  'opportunities': () => ({ kind: 'opps', title: 'Find opportunities', result: OPPS.opportunities }),
+  'figures': () => ({ kind: 'figures', title: 'Find figures of speech', result: OPPS.figures }),
+  'opportunities': () => ({ kind: 'opps', title: 'Where to add a technique', result: OPPS.opportunities }),
   'read': (b) => { const r = FIXTURE_READ({ sample: true, body: b }); return { kind: 'read', title: 'Read my piece', result: r.result } },
   'rewrite': (b, sel) => { const text = b.slice(sel.start, sel.end); return { kind: 'rewrite', title: 'Rewrite', result: { selection: { start: sel.start, end: sel.end, text }, options: q.get('stocky') ? [
     { text: 'Moving forward, the memo calls it a modest efficiency.', how: 'adds a turn', unsupported: [] },
@@ -226,8 +226,10 @@ function fakeRest(path, opts = {}) {
   if (path.startsWith('/thesaurus/') && STATE === 'wordsoff') return Promise.reject(new Error('Hermes desktop bridge unavailable'))
   if (path.startsWith('/thesaurus/')) return fetch(`../library/thesaurus/${path.slice(11)}.json`).then(x => x.json())
   if (path === '/health') r = { ok: true }
+  else if (path === '/state' && q.get('slow') && !opts.__late) return new Promise(res => setTimeout(() => res(fakeRest(path, { ...opts, __late: true })), Number(q.get('slow'))))
   else if (path === '/state') r = { pieces: Object.values(db.pieces).filter(p => !p.trashed).sort((a, b) => b.updated - a.updated).map(meta), trash: Object.values(db.pieces).filter(p => p.trashed).length, current: full(current), running: null, settings, sample_read: window.__SAMPLE_READ !== undefined ? window.__SAMPLE_READ : FIXTURE_READ(current) }
   else if (path === '/settings') { if (method === 'POST') Object.assign(settings, body); r = settings }
+  else if ((r = m(/^\/scene\/builtin\/(\w+)$/))) return builtinScene(r[1])
   else if (path === '/scene/picture' && method === 'GET') r = { data: db.picture || null }
   else if (path === '/scene/picture') { db.picture = `data:image/png;base64,${body.data}`; r = { data: db.picture } }
   else if (path === '/scene/picture/remove') { db.picture = null; r = { data: null } }
@@ -240,6 +242,8 @@ function fakeRest(path, opts = {}) {
       : { ready: true, engine: 'hermes', provider: 'openai', local: false, label: 'OpenAI', message: '', press_first: true }
   else if (path === '/dictation') r = body.send_to === 'openai' ? { text: 'Nobody in the line had come for a book.', label: 'OpenAI', local: false } : { needs_press: true, ask: 'Your recording goes to OpenAI, the speech-to-text chosen in Hermes Settings, Voice, to be turned into text. Send it?', send_to: 'openai', label: 'OpenAI' }
   else if (path === '/pieces' && method === 'GET') r = { pieces: Object.values(db.pieces).filter(p => !p.trashed).map(meta), trash: Object.values(db.pieces).filter(p => p.trashed).map(meta) }
+  else if ((r = m(/^\/pieces\/(\w+)\/delete$/))) { if (!db.pieces[r[1]]?.trashed) throw new Error('400: Move this piece to the trash first. Only a piece in the trash can be deleted forever.'); delete db.pieces[r[1]]; r = { pieces: Object.values(db.pieces).filter(p => !p.trashed).map(meta), trash: Object.values(db.pieces).filter(p => p.trashed).map(meta) } }
+  else if (path === '/trash/empty') { const gone = Object.values(db.pieces).filter(p => p.trashed); for (const p of gone) delete db.pieces[p.id]; r = { deleted: gone.length, pieces: Object.values(db.pieces).filter(p => !p.trashed).map(meta), trash: [] } }
   else if (path === '/pieces' && method === 'POST') { const p = addPiece(body.title || '', body.body || '', { updated: now() }); r = full(p) }
   else if ((r = m(/^\/pieces\/(\w+)\/save$/))) { const p = db.pieces[r[1]]; if (body.title != null) p.title = body.title; if (body.body != null) p.body = body.body; p.updated = now(); r = meta(p) }
   else if ((r = m(/^\/pieces\/(\w+)\/versions$/)) && method === 'GET') r = { finished: db.versions[0].id, usage: { passes: 6, tokens_in: 41820, tokens_out: 5310 }, versions: db.versions.filter(v => v.piece_id === r[1]).sort((a, b) => b.created - a.created).map((v, i, all) => ({ ...v, label: LABELS[v.reason], words: words(v.body), start: v.body.slice(0, 140), changed: changedPhrase(v.body, all[i + 1] ? all[i + 1].body : null) })),
@@ -286,6 +290,17 @@ function fakeRest(path, opts = {}) {
   return new Promise(res => setTimeout(() => res(JSON.parse(JSON.stringify(r))), 20))
 }
 
+// The built-in scenes, as dashboard/plugin_api.py serves them: the photograph in desktop/assets/ as base64.
+const SCENE_FILES = { snow: 'snow-light.jpg', marsh: 'quiet-marsh.jpg', tide: 'night-tide.jpg' }
+async function builtinScene(name) {
+  if (!SCENE_FILES[name]) throw new Error('404: {"detail":"That scene is not part of The Clearing."}')
+  const bytes = new Uint8Array(await (await fetch(`../desktop/assets/${SCENE_FILES[name]}`)).arrayBuffer())
+  let bin = ''
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000))
+  const hash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 12)
+  return { name, mime: 'image/jpeg', hash, data: btoa(bin) }
+}
+
 const store = new Map(STATE === 'invite' ? [] : /^(welcome|sample)/.test(STATE) ? [['invited', 'true']] : [['invited', 'true'], ['welcomed', 'true']])
 const ctx = {
   rest: fakeRest,
@@ -308,6 +323,10 @@ if (q.get('scene') === 'plain') store.set('scene', '"plain"')
 if (q.get('shape')) store.set('shape', 'true')
 if (q.get('scene') === 'marsh') store.set('scene', '"marsh"')
 if (q.get('look')) store.set('look', JSON.stringify({ size: 'large', contrast: 'high' }))
+// kept=1: the room's first screen from an earlier open is in the storage (desktop/src/boot.js); with slow=<ms> the
+// backend's GET /state answers that late, so a screenshot shows what the room draws before it does.
+if (q.get('kept')) store.set('boot', JSON.stringify({ v: 1, at: Date.now(), current: { ...meta(current), body: current.body }, pieces: Object.values(db.pieces).filter(p => !p.trashed).map(meta), trash: 1, settings: {} }))
+window.__store = store // what the page keeps in ctx.storage, for checks
 plugin.register(ctx)
 const page = ctx.registered.find(c => c.id === 'page')
 createRoot(document.getElementById('root')).render(jsx(page.render, {}))
@@ -394,7 +413,7 @@ async function script() {
   }
   if (s === 'ask') await askFor('my ending is weak', false)
   if (s === 'askempty') await askFor('', false)
-  // Spot the figures and Find opportunities (opps1)
+  // Find figures of speech and Where to add a technique (opps1)
   const spots = async which => { const b = await until(() => document.querySelector(`.cl-desk-side[data-id=${which}]`)); b && b.click(); await until(() => document.querySelector('.cl-spot'), 6000); await wait(300) }
   const typeInto = async (sel, text) => { const t = await until(() => document.querySelector(sel)); if (t) { const set = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set; set.call(t, text); t.dispatchEvent(new Event('input', { bubbles: true })) } await wait(120) }
   if (/^spot/.test(s)) {
@@ -419,6 +438,9 @@ async function script() {
   if (s === 'finishword') { await click('Finish'); await click('Save as Word') }
   if (s === 'history') { await click('The room nobody counts'); await click('History') }
   if (s === 'room') { await click('The room nobody counts'); await click('The room') }
+  if (s === 'trash' || s === 'trashask' || s === 'trashall') { db.pieces[addPiece('Notes for the council letter', 'More words.').id].trashed = now() - 7200; await click('The room nobody counts'); await until(() => [...document.querySelectorAll('.cl-item')].find(b => b.firstChild && b.firstChild.textContent === 'Trash')).then(b => b && b.click()); await wait(400)
+    if (s === 'trashask') { document.querySelector('[aria-label^="Delete An older draft"]').click(); await wait(200) }
+    if (s === 'trashall') { await click('Empty the trash'); await wait(200) } }
   if (s === 'about') { await click('The room nobody counts'); await click('About The Clearing') }
   // Damon's notes, Nov 8
   const select = (q, detail = 1) => { const ta = document.querySelector('.cl-body'), at = ta.value.indexOf(q); ta.focus({ preventScroll: true }); ta.setSelectionRange(at, at + q.length); ta.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, detail })) }

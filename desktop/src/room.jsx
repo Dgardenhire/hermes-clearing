@@ -5,8 +5,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { atom, captureGatewayFileDownload, host, useValue } from '@hermes/plugin-sdk'
 import { instantRead, summarize } from './quick-check.js'
-import { caretFor, placeNote, reopen } from './walk.js'
-import { BUILT_IN, QUICK, WORDS, buildTargets, findTargets, forRoom, libraryMenu, shortFor } from './ask.js'
+import { caretFor, marginMax, placeNote, reopen } from './walk.js'
+import { BUILT_IN, QUICK, WORDS, buildTargets, findTargets, forRoom, libraryCount, libraryMenu, shortFor } from './ask.js'
 import { SCENES, USED, joinAt, quotedSource, sceneShown, screen, screenTry, shown, toolAt, wordAround } from './suggest.js'
 import { POS_LABEL, createThesaurus, normalizeSelection } from './thesaurus.js'
 import { createPassGate } from './gate.js'
@@ -17,6 +17,9 @@ import { FigureNote, OppsList, TryIt } from './spots.jsx'
 import { figureMarks, oppMarks } from './spots.js'
 import { share as authorShare } from './authorship.js'
 import { readView, sentenceAt } from './surfaces.js'
+import { BOOT_KEY, packBoot, readBoot, shownText } from './boot.js'
+import { createSceneLoader, sceneStyle } from './scenes.js'
+import { SCENES as SCENE_FILES } from './assets.gen.js'
 import {
   applyChanges, applyCuts, asMarkdown, paragraphs, asPlainText, editSpan, fileName, followEdit, fromFile, markAt, plural, replaceSpan, runs, timeAgo, wordCount,
 } from './text.js'
@@ -30,7 +33,18 @@ export const TARGETS = buildTargets(LIB)
 export const $command = atom(null) // set by the Hermes palette commands: 'quick' | 'ask'
 
 let api = null
-export function bindContext(ctx) { api = ctx }
+const MANUAL_URL = 'https://linchpin.studio/hermes/clearing/manual/'
+// The built-in scene photographs (scenes.js): loading starts when the plugin registers, before the page opens.
+export const $scenes = atom({})
+let scenes = null
+export function bindContext(ctx) {
+  if (!ctx) { for (const u of Object.values($scenes.get())) { try { if (String(u).startsWith('blob:')) URL.revokeObjectURL(u) } catch (e) { /* gone */ } } }
+  api = ctx
+  $scenes.set({})
+  scenes = ctx ? createSceneLoader({ manifest: SCENE_FILES, rest, files: ctx.files, onLoad: urls => $scenes.set(urls) }) : null
+  if (scenes) scenes.preload(firstScene())
+}
+const firstScene = () => sceneShown(store().get('scene', 'theme'), typeof document !== 'undefined' && document.documentElement.classList.contains('dark'))
 
 const MAC = typeof navigator !== 'undefined' && /mac|iphone|ipad/i.test(navigator.userAgentData?.platform || navigator.platform || navigator.userAgent || '')
 const MOD = MAC ? '⌘E' : 'Ctrl E'
@@ -86,6 +100,12 @@ function store() {
     set(k, v) { try { s && s.set(k, JSON.stringify(v)) } catch (e) { /* storage full: the backend still has it */ } },
     remove(k) { try { s && s.remove(k) } catch (e) { /* ignore */ } },
   }
+}
+
+// The authorship spans kept for a piece, still standing on the same words.
+function keptSpans(id, b) {
+  const kept = store().get(`spans:${id}`, [])
+  return (Array.isArray(kept) ? kept : []).filter(s => s && typeof s.start === 'number' && b.slice(s.start, s.end) === s.quote)
 }
 
 function toBase64(bytes) {
@@ -146,12 +166,22 @@ function useAutoHeight(ref, value) {
 // ---------------------------------------------------------------- the room --
 export function Room() {
   const command = useValue($command)
+  const sceneUrls = useValue($scenes)
+  // The first screen from the last open (boot.js), drawn at once while the backend starts. The piece is marked
+  // cached (and local, so nothing that needs the backend offers itself); the page is read-only until the fresh
+  // answer replaces it, so nothing is typed onto words that may be out of date.
+  const [boot] = useState(() => {
+    const b = readBoot(store().get(BOOT_KEY, null))
+    if (!b) return null
+    const shown = shownText(b.current, store().get(`draft:${b.current.id}`, null))
+    return { ...b, shown }
+  })
   const [conn, setConn] = useState('loading') // loading | ok | off
-  const [piece, setPiece] = useState(null)
-  const [pieces, setPieces] = useState([])
-  const [trash, setTrash] = useState(0)
-  const [title, setTitle] = useState('')
-  const [body, setBody] = useState('')
+  const [piece, setPiece] = useState(() => (boot ? { ...boot.current, cached: true, local: true } : null))
+  const [pieces, setPieces] = useState(() => (boot ? boot.pieces : []))
+  const [trash, setTrash] = useState(() => (boot ? boot.trash : 0))
+  const [title, setTitle] = useState(() => (boot ? boot.shown.title : ''))
+  const [body, setBody] = useState(() => (boot ? boot.shown.body : ''))
   const [save, setSave] = useState('saved') // saved | saving | local | error
   const [marks, setMarks] = useState([])
   const [walk, setWalk] = useState(null) // the open set of notes and where the writer is in it
@@ -166,14 +196,14 @@ export function Room() {
   const [bring, setBring] = useState(false) // the Bring in menu
   const [rec, setRec] = useState({ phase: 'idle' }) // dictation: idle | starting | recording | working
   const [pop, setPop] = useState({ top: 0, left: 0 }) // where the floating card sits in the page
-  const [spans, setSpans] = useState([]) // the model's words in this piece, until the writer types inside them
+  const [spans, setSpans] = useState(() => (boot ? keptSpans(boot.current.id, boot.shown.body) : [])) // the model's words in this piece, until the writer types inside them
   const [shape, setShape] = useState(() => store().get('shape', false))
   const [look, setLook] = useState(() => store().get('look', { size: 'regular', contrast: 'standard' }))
   const setLookKey = (k, v) => setLook(l => { const n = { ...l, [k]: v }; store().set('look', n); return n })
   const [narrow, setNarrow] = useState(false)
   const [noteTop, setNoteTop] = useState(0)
   const [preview, setPreview] = useState(null) // an opening shown in the page, not yet kept
-  const [welcome, setWelcome] = useState(false) // first open on a fresh profile: the welcome card, alone
+  const [welcome, setWelcome] = useState(() => !!(boot && boot.current.sample && !store().get('welcomed', false))) // first open on a fresh profile: the welcome card, alone
   const [sampleRead, setSampleRead] = useState(null) // the stored real read of the sample piece (GET /state)
   const [nums, setNums] = useState([]) // the margin numerals beside the ranked changes
 
@@ -187,6 +217,7 @@ export function Room() {
   // edits typed while it ran.
   live.current = { ...live.current, piece, title, body, marks, spans, walk, card, conn, save, narrow, settings, rec, preview, sampleRead }
   const roomTargets = useMemo(() => forRoom(TARGETS, settings.suggestions), [settings.suggestions])
+  const methodCount = useMemo(() => libraryCount(libraryMenu(roomTargets, additions)), [roomTargets]) // what All methods lists
   const timers = useRef({})
   const pollRef = useRef(null) // the running pass's poll
 
@@ -195,13 +226,12 @@ export function Room() {
 
   // ---- loading and saving
   const open = useCallback((p, list) => {
-    const buf = store().get(`draft:${p.id}`, null)
-    let t = p.title, b = p.body
-    if (buf && buf.at > (p.updated || 0) && (buf.body !== p.body || buf.title !== p.title)) { t = buf.title; b = buf.body; queueSave() }
+    const { title: t, body: b, buffered } = shownText(p, store().get(`draft:${p.id}`, null))
+    if (buffered) queueSave()
     clearInterval(pollRef.current) // a pass started on the last piece never lands on this one
     setPiece(p); setTitle(t); setBody(b); setMarks([]); setWalk(null); setPreview(null)
     // Words that came from the editor stay marked across sessions, as long as they are still the same words.
-    setSpans(store().get(`spans:${p.id}`, []).filter(s => s && typeof s.start === 'number' && b.slice(s.start, s.end) === s.quote))
+    setSpans(keptSpans(p.id, b))
     setCard(null)
     setWelcome(!!p.sample && !store().get('welcomed', false))
     if (list) setPieces(list)
@@ -223,12 +253,18 @@ export function Room() {
         host.notify && host.notify({ kind: 'success', message: 'Your words from while saving was off are in a new piece.' })
         return
       }
-      open(s.current, s.pieces)
+      const was = live.current.piece
+      const fresh = shownText(s.current, store().get(`draft:${s.current.id}`, null))
+      if (was && was.cached && was.id === s.current.id && fresh.title === live.current.title && fresh.body === live.current.body) {
+        // The kept first screen was right: swap in the fresh piece without redrawing the page or closing a note.
+        setPiece(s.current); setPieces(s.pieces); setSave('saved'); store().set('last', s.current.id)
+        if (fresh.buffered) queueSave()
+      } else open(s.current, s.pieces)
       if (s.running) follow(s.running)
     } catch (e) {
       const err = errorOf(e)
       setConn('off')
-      if (!live.current.piece) {
+      if (!live.current.piece || live.current.piece.cached) {
         const local = store().get('draft:local', { title: '', body: '' })
         setPiece({ id: 'local', title: local.title, body: local.body, local: true }); setTitle(local.title); setBody(local.body)
       }
@@ -238,6 +274,15 @@ export function Room() {
   }, [open])
 
   useEffect(() => { load() }, [load])
+
+  // Remember the first screen for the next open (boot.js) whenever it is saved and the backend agrees: after the
+  // load, after a save lands and after another piece opens. Over the cap, the old copy goes, so a stale long piece
+  // never shows.
+  useEffect(() => {
+    if (conn !== 'ok' || save !== 'saved' || !piece || piece.local) return
+    const value = packBoot({ current: { ...piece, title, body }, pieces, trash, settings })
+    if (value) store().set(BOOT_KEY, value); else store().remove(BOOT_KEY)
+  }, [conn, save, piece, pieces, trash, settings]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // While the backend is off, look for it every few seconds.
   useEffect(() => {
@@ -253,7 +298,7 @@ export function Room() {
 
   async function flush() {
     const { piece: p, title: t, body: b, conn: c } = live.current
-    if (!p) return
+    if (!p || p.cached) return // the kept first screen is read-only and already saved
     if (p.local || c !== 'ok') { store().set(`draft:${p.local ? 'local' : p.id}`, { title: t, body: b, at: Date.now() / 1000 }); setSave('local'); return }
     setSave('saving')
     try {
@@ -349,6 +394,7 @@ export function Room() {
   })
 
   function changeBody(next, how = 'edit') {
+    if (live.current.piece && live.current.piece.cached) return // read-only until the fresh piece arrives
     const prev = live.current.body
     if (!live.current.replaying && prev !== next) {
       remember(prev, next, live.current.inserting ? 'suggestion' : how)
@@ -367,6 +413,7 @@ export function Room() {
   }
 
   function changeTitle(next) {
+    if (live.current.piece && live.current.piece.cached) return
     setTitle(next.replace(/\n/g, ' '))
     setSave(live.current.conn === 'ok' ? 'saving' : 'local')
     queueSave(); typed()
@@ -439,6 +486,23 @@ export function Room() {
     if (!el || typeof ResizeObserver === 'undefined') return undefined
     const ro = new ResizeObserver(([e]) => setNarrow(e.contentRect.width < 860))
     ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  // Keep the margin's lists above the Ask line: their height limit follows the pane's real height (walk.js marginMax).
+  useEffect(() => {
+    // The room is watched (the page's scroll area inside it follows its height), and the scroll area and margin are
+    // read fresh on each change.
+    const room = roomRef.current
+    if (!room || typeof ResizeObserver === 'undefined') return undefined
+    const fit = () => {
+      const view = scrollRef.current, m = marginRef.current
+      if (!view) return
+      const offset = m ? m.getBoundingClientRect().top - view.getBoundingClientRect().top + view.scrollTop : 50
+      room.style.setProperty('--cl-margin-max', `${marginMax({ viewHeight: view.clientHeight, marginOffset: offset, askRoom: ASK_ROOM })}px`)
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
+    ro.observe(room)
     return () => ro.disconnect()
   }, [])
 
@@ -631,7 +695,7 @@ export function Room() {
       started.sentBody = b
       live.current.sent = b
       follow(started, anchorAt)
-      // Spot the figures and Find opportunities keep one result per piece version: the same words show it again at once.
+      // Find figures of speech and Where to add a technique keep one result per piece version: the same words show it again at once.
       if (started.status === 'done') { live.current.card = { type: 'working', pass: started }; poll(started.id) }
     } catch (e) {
       const err = errorOf(e)
@@ -667,7 +731,7 @@ export function Room() {
     if (p.kind === 'read') { showRead(r, { model, moved }); return }
     if (p.kind === 'figures' || p.kind === 'opps') {
       const ms = moved(p.kind === 'figures' ? figureMarks(LIB, r, stamp) : oppMarks(LIB, r, stamp)).filter(m => !m.changed)
-      const none = p.kind === 'figures' ? 'Spot the figures found none of the library’s figures in this version of your piece.' : 'Find opportunities found nothing to propose in this version of your piece.'
+      const none = p.kind === 'figures' ? 'None of the library’s figures of speech are in this version of your piece.' : 'No place in this version of your piece where a technique from the library would help.'
       startWalk(ms, { kind: p.kind, title: p.title, who, model, counts: r.counts, summary: ms.length ? '' : none, cached: !!p.cached })
       return
     }
@@ -1372,7 +1436,16 @@ export function Room() {
   // Where talk-it-through goes, asked once the backend is on: hidden when there is no speech-to-text, "Typed out
   // privately" when it stays on the computer, and the service's name when it doesn't.
   const [speech, setSpeech] = useState(null)
-  useEffect(() => { if (conn === 'ok') rest('/dictation').then(setSpeech, () => setSpeech(null)) }, [conn])
+  // Asked at once, beside GET /state rather than after it; the first answer is used when the backend is on, and a
+  // failed early ask is asked again then.
+  const early = useRef({})
+  useEffect(() => { early.current.dictation = rest('/dictation').catch(() => null) }, [])
+  useEffect(() => {
+    if (conn !== 'ok') return
+    const first = early.current.dictation
+    early.current.dictation = null
+    ;(first ? first.then(r => r || rest('/dictation')) : rest('/dictation')).then(setSpeech, () => setSpeech(null))
+  }, [conn])
   const speechLine = !speech ? '' : speech.local === true ? 'Typed out privately. Nothing is sent.' : `Sent to ${speech.label || 'the speech-to-text set up in Hermes'} to type out`
   function dictationFailed(message) { setRec({ phase: 'idle' }); setCard({ type: 'failed', title: 'Talk it through', message, retry: null }) }
   async function dictate() {
@@ -1444,10 +1517,21 @@ export function Room() {
     }
     if (live.current.conn === 'ok') post('/settings', { suggestions: on }).catch(() => {})
   }
+  // The writer's own picture is asked for at once too (beside GET /state), and again once the backend is on if the
+  // first ask failed; one ask at a time.
+  const pictureAsk = useRef(null)
+  const askPicture = () => {
+    if (pictureAsk.current) return
+    pictureAsk.current = rest('/scene/picture').then(r => setPicture(p => p || r.data || null), () => {}).finally(() => { pictureAsk.current = null })
+  }
+  useEffect(() => { if (scene === 'own') askPicture() }, []) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (scene !== 'own' || conn !== 'ok' || picture) return
-    rest('/scene/picture').then(r => setPicture(r.data || null), () => {})
-  }, [scene, conn, picture])
+    askPicture()
+  }, [scene, conn, picture]) // eslint-disable-line react-hooks/exhaustive-deps
+  // The built-in scenes started loading when the plugin registered; any that could not load then (the backend was
+  // still starting) are asked for again when the page opens and when the backend is on.
+  useEffect(() => { if (scenes && scenes.missing().length) scenes.loadAll(scene) }, [conn]) // eslint-disable-line react-hooks/exhaustive-deps
   function chooseScene(v) { setScene(v); store().set('scene', v) }
 
   // ---- palette commands and keys
@@ -1601,8 +1685,10 @@ export function Room() {
 
   const note = renderCard()
   const ownScene = scene === 'own' && picture ? { '--cl-scene': `url("${picture}")` } : undefined
+  const roomStyle = { ...sceneStyle(sceneUrls), ...ownScene }
+  const kept = !!(piece && piece.cached) // the first screen from the last open, until the fresh one arrives
   return (
-    <div className="cl-room" ref={roomRef} data-welcome={welcome ? '' : undefined} data-scene={scene} data-size={look.size} data-contrast={look.contrast} style={ownScene} onKeyDown={onKeyDown} onPointerMove={() => away && setAway(false)}>
+    <div className="cl-room" ref={roomRef} data-welcome={welcome ? '' : undefined} data-scene={scene} data-size={look.size} data-contrast={look.contrast} style={roomStyle} onKeyDown={onKeyDown} onPointerMove={() => away && setAway(false)}>
       <div className="cl-top" data-away={away && !menu ? '' : undefined}>
         <button className="cl-titlebtn" ref={titleBtnRef} aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(m => !m)}>
           <span>{title.trim() || 'Untitled'}</span><Icon name="down" />
@@ -1617,14 +1703,14 @@ export function Room() {
         <span className="cl-saved" role="status">{save === 'saved' ? <Icon name="check" /> : save === 'error' ? <Icon name="alert" /> : save === 'local' ? <Icon name="local" /> : null}<span className="cl-savedtext">{saveLabel}</span></span>
         <button className="cl-finish cl-scenebtn" onClick={() => { setMenu(false); setBring(false); setSheet('room') }}>Scene</button>
         <button className="cl-finish" ref={bringRef} aria-haspopup="menu" aria-expanded={bring} onClick={() => { setMenu(false); setBring(v => !v) }}>Bring in</button>
-        <button className="cl-finish" onClick={() => { setMenu(false); setBring(false); setSheet('finish') }}>Finish</button>
+        <button className="cl-finish" onClick={() => { if (kept) return; setMenu(false); setBring(false); setSheet('finish') }}>Finish</button>
       </div>
       {conn === 'off' && <div className="cl-banner" role="status"><Icon name="alert" />The Clearing's saving and editor are off. Turn on The Clearing in Settings, Plugins.</div>}
 
       <div className="cl-scroll" ref={scrollRef}>
         <div className="cl-grid">
           <article className="cl-page" ref={pageRef}>
-            <textarea className="cl-titlefield" ref={titleRef} rows={1} value={title} placeholder="Title" aria-label="Title"
+            <textarea className="cl-titlefield" ref={titleRef} rows={1} value={title} placeholder="Title" aria-label="Title" readOnly={kept}
               onChange={e => changeTitle(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); bodyRef.current && bodyRef.current.focus() } }} />
             {card && card.type === 'cuts' ? (
               <div className="cl-preview cl-cutview" aria-label="The page with proposed cuts">
@@ -1649,7 +1735,7 @@ export function Room() {
                 <MarkLayer body={body} marks={openMarks} active={current && current.id} mirrorRef={mirrorRef} caret={caretAt} />
                 {ticks.length ? <div className="cl-ticks" aria-hidden="true">{ticks.map((t, i) => <i key={i} style={{ top: t.top, height: t.height }} />)}</div> : null}
                 {nums.length ? <div className="cl-nums" aria-hidden="true">{nums.map(x => <b key={x.n} data-on={x.on ? '' : undefined} style={{ top: x.top, left: -26 * (x.col || 0) }}>{x.n}</b>)}</div> : null}
-                <textarea className="cl-body" ref={bodyRef} value={body} aria-label="Your piece" placeholder="Start writing." spellCheck
+                <textarea className="cl-body" ref={bodyRef} value={body} aria-label="Your piece" placeholder="Start writing." spellCheck readOnly={kept}
                   onChange={e => { changeBody(e.target.value, 'typing'); if (card && card.type === 'tools') setCard(null) }} onClick={pickAtCaret} onDoubleClick={onDouble} onMouseUp={onPointerUp}
                   onSelect={e => { live.current.caret = e.target.selectionEnd }}
                   onKeyUp={e => { if (e.key.startsWith('Arrow')) pickAtCaret() }} />
@@ -1729,7 +1815,7 @@ export function Room() {
           {sheet === 'history' && <HistorySheet piece={piece} current={body} onClose={() => setSheet(null)} onRestore={p => { open(p); setSheet(null) }} flush={flush} />}
           {sheet === 'link' && <LinkSheet conn={conn} onClose={() => setSheet(null)} onNew={(t, b, u) => newPieceFrom(t, b, u)} onInsert={text => { insertAtCursor(text, true); setSheet(null) }} />}
           {sheet === 'paste' && <PasteSheet onClose={() => setSheet(null)} conn={conn} onNew={b => { const f = fromFile('', b); newPieceFrom(f.title, f.body) }} onInsert={text => { insertAtCursor(text, true); setSheet(null) }} />}
-          {sheet === 'trash' && <TrashSheet onClose={() => setSheet(null)} onRestore={restorePiece} />}
+          {sheet === 'trash' && <TrashSheet onClose={() => setSheet(null)} onRestore={restorePiece} onDeleted={setTrash} />}
           {sheet === 'about' && <AboutSheet targets={roomTargets} suggestions={settings.suggestions} onClose={() => setSheet(null)} onLibrary={() => setSheet('library')} />}
           {sheet === 'library' && <LibrarySheet targets={roomTargets} onClose={() => setSheet(null)} onRun={t => { setSheet(null); runTarget(t) }} />}
           {sheet === 'guidance' && <GuidanceSheet piece={piece} conn={conn} onClose={() => setSheet(null)} onVoice={toggleVoice} onRun={id => { setSheet(null); runTarget(TARGETS.find(x => x.id === id)) }} onHome={() => setSheet('home')} />}
@@ -1753,7 +1839,7 @@ export function Room() {
     runTarget(TARGETS.find(x => x.id === 'rewrite'), { selection: sel })
   }
 
-  // ------------------------------------------------- Spot the figures, Find opportunities --
+  // ------------------------------------------------- Find figures of speech, Where to add a technique --
   // Try it: the writer writes their own version of the line in the card; the coach answers with what works and
   // questions, never wording; Use mine puts the writer's version into the page as one step Undo takes out.
   function tryStart(m) { setPreview(null); setWalk(w => (w ? { ...w, showing: null, trying: { id: m.id, line: m.quote, reply: '', busy: false, err: '' } } : w)) }
@@ -1841,6 +1927,7 @@ export function Room() {
     if (bring) return null // the Bring in menu opens over the margin; two stacked lists both offered Talk it through (Loop 2 critics)
     const reading = !!card && card.type === 'working' && card.pass.kind === 'read'
     return <Desk compact={compact} narrow={!!bar} resting={!card || card.type === 'readresult' || floating} busy={reading} modKey={MOD} quickCount={quickCount}
+      methodCount={methodCount} onLibrary={() => { setMenu(false); setSheet('library') }}
       canRead={conn === 'ok' && !!piece && !piece.local} canAsk canRewrite={settings.suggestions && conn === 'ok' && !!piece && !piece.local} canTalk={!!(speech && speech.ready)} canBringIn
       onRead={() => runTarget(TARGETS.find(x => x.id === 'read'))} onFigures={() => runTarget(TARGETS.find(x => x.id === 'figures'))} onOpps={() => runTarget(TARGETS.find(x => x.id === 'opportunities'))} onAsk={openAsk} onRewrite={rewriteHere} onBringIn={() => { setMenu(false); setBring(true) }} onTalk={dictate} onQuick={quickCheck} />
   }
@@ -2602,6 +2689,8 @@ function TitleMenu({ pieces, piece, trash, scene, conn, shape, onVoice, onShape,
       <button className="cl-item" role="menuitem" disabled={off || !trash} onClick={() => onSheet('trash')}>Trash<small>{trash || ''}</small></button>
       <div className="cl-sep" />
       <button className="cl-item" role="menuitem" onClick={() => onSheet('about')}>About The Clearing</button>
+      {/* The manual on linchpin.studio, in the user's own browser (Nov 11: no plugin linked its manual). */}
+      <button className="cl-item" role="menuitem" onClick={() => { if (api && api.os && api.os.openExternal) api.os.openExternal(MANUAL_URL) }}>The manual</button>
     </div>
   )
 }
@@ -2714,23 +2803,53 @@ function HistorySheet({ piece, current = '', onClose, onRestore, flush }) {
   )
 }
 
-function TrashSheet({ onClose, onRestore }) {
+function TrashSheet({ onClose, onRestore, onDeleted }) {
   const [items, setItems] = useState(null)
+  const [ask, setAsk] = useState(null) // a piece id, or 'all', waiting for the writer to confirm
+  const [err, setErr] = useState(null)
+  const [busy, setBusy] = useState(false)
   useEffect(() => { rest('/pieces').then(r => setItems(r.trash)).catch(() => setItems([])) }, [])
+  async function remove(what) {
+    setBusy(true); setErr(null)
+    try {
+      const r = what === 'all' ? await post('/trash/empty') : await post(`/pieces/${what}/delete`)
+      const gone = (items || []).length - r.trash.length
+      setItems(r.trash); setAsk(null); onDeleted && onDeleted(r.trash.length)
+      host.notify && host.notify({ kind: 'info', message: gone === 1 ? 'Deleted forever.' : `${gone} pieces deleted forever.` })
+    } catch (e) { setErr(errorOf(e).detail) } finally { setBusy(false) }
+  }
+  const confirm = (what, text, many) => (
+    <div className="cl-confirm" role="alertdialog" aria-label="Delete forever">
+      <p>{text} {many ? 'Their' : 'Its'} versions and editor history go too. This can't be undone.</p>
+      <div className="cl-row">
+        <button className="cl-btn" data-v="danger" disabled={busy} onClick={() => remove(what)} autoFocus>Delete forever</button>
+        <button className="cl-btn" data-v="ghost" disabled={busy} onClick={() => setAsk(null)}>Keep it</button>
+      </div>
+    </div>
+  )
   return (
     <div className="cl-sheet" role="dialog" aria-label="Trash">
       <h2>Trash</h2>
-      <p>Pieces in the trash are kept until you restore them.</p>
+      <p>Pieces in the trash are kept until you restore them or delete them forever.</p>
+      {err && <p className="cl-status" role="status"><Icon name="alert" /><span>{err}</span></p>}
       <div className="cl-versions">
         {(items || []).map(p => (
           <div className="cl-version" key={p.id}>
             <b>{p.title || 'Untitled'}</b><span>{plural(p.words, 'word', 'words')} · moved {timeAgo(p.trashed)}</span>
-            <button className="cl-btn" data-v="ghost" onClick={() => onRestore(p.id)}>Restore</button>
+            <div className="cl-trash-acts">
+              <button className="cl-btn" data-v="ghost" disabled={busy} onClick={() => onRestore(p.id)}>Restore</button>
+              <button className="cl-btn" data-v="ghost" disabled={busy} aria-label={`Delete ${p.title || 'Untitled'} forever`} onClick={() => setAsk(p.id)}>Delete forever</button>
+            </div>
+            {ask === p.id ? confirm(p.id, `Delete “${p.title || 'Untitled'}” forever?`) : null}
           </div>
         ))}
         {items && !items.length ? <p>The trash is empty.</p> : null}
       </div>
-      <div className="cl-row"><button className="cl-btn" data-v="primary" onClick={onClose}>Close</button></div>
+      {ask === 'all' && items && items.length ? confirm('all', items.length === 1 ? 'Delete the one piece in the trash forever?' : `Delete all ${items.length} pieces in the trash forever?`, items.length > 1) : null}
+      <div className="cl-row">
+        <button className="cl-btn" data-v="primary" onClick={onClose}>Close</button>
+        {items && items.length ? <button className="cl-btn" data-v="ghost" disabled={busy || ask === 'all'} onClick={() => setAsk('all')}>Empty the trash</button> : null}
+      </div>
     </div>
   )
 }
@@ -2787,7 +2906,7 @@ function AboutSheet({ onClose, onLibrary }) {
       <h2 id="cl-about-title">About The Clearing</h2>
       <p>A quiet page for writing, with your Hermes model as the editor. It reads your piece the way a good editor would, marks the passages worth changing, and shows a better version in your page. <b>Use this</b> puts a suggestion into your page, and <b>Undo</b> takes it out again.</p>
       <h3>Where your words go</h3>
-      <p>Your pieces and their history are kept in Hermes's data folder. When you ask the editor for something, the piece or the passage you selected goes to the model you picked in Hermes: a model on your own machine keeps it there, and a cloud model sends it to that provider. Talk it through sends your voice to OpenAI to type it out. Quick check and Other words work without a model.</p>
+      <p>Your pieces and their history are kept in Hermes's data folder. When you ask the editor for something, the piece or the passage you selected goes to the model you picked in Hermes: a model on your own machine keeps it there, and a cloud model sends it to that provider. Talk it through sends your recording to the speech-to-text set up in Hermes to type it out. Quick check and Other words work without a model.</p>
       <h3>Credits</h3>
       <ul className="cl-credits">{credits.map(c => <li key={c.name}><b>{c.name}.</b> {c.what.replace(/\s*The notice is in [^ ]+\.txt\./, '')}{c.url ? <> {link(c)}</> : null}</li>)}</ul>
       <div className="cl-row cl-about-row"><button className="cl-btn" data-v="ghost" onClick={onLibrary}>All methods</button><button className="cl-btn" data-v="primary" onClick={onClose}>Close</button></div>

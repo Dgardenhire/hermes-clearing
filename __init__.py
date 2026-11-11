@@ -10,7 +10,7 @@ The modules:
 
 The routes live in ``dashboard/plugin_api.py`` and the page in ``desktop/plugin.js``.
 
-``register(ctx)`` adds one auxiliary task (``clearing_editor``, listed in Settings, Models, Auxiliary, so the
+``register(ctx)`` adds one auxiliary task (``clearing_editor``, listed in Settings, Model, Auxiliary models, so the
 writer can point the editor at any model) and one observe-only hook, matching ``plugin.yaml``. No tools,
 no middleware, no background work. It also hands ``ctx`` to ``runtime.py``, so the page's link reader can
 use ``ctx.dispatch_tool`` when the routes run in this process. (``plugin.yaml`` no longer lists ``provides_middleware: []``: Hermes's loader

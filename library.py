@@ -1509,7 +1509,9 @@ def clean_verdict(text: str) -> str:
             rest = m.group(3).strip()
             kept.append(rest[:1].upper() + rest[1:])
         elif praise_only(p):
-            praise_clause = praise_clause or re.split(r"\s*[,;:\u2014\u2013]\s*|\s+-\s+", p.rstrip(".!"), maxsplit=1)[0].strip()
+            # The whole sentence, never the part before its first comma: a live read showed "The piece has a strong."
+            # cut from "The piece has a strong, concrete closing line" (Nov 11 live check).
+            praise_clause = praise_clause or p.rstrip(".!").strip()
         else:
             kept.append(p)
     kept = [k for k in kept if k]
@@ -2206,7 +2208,7 @@ def first_paragraph(body: str) -> tuple[int, int]:
     return m.start(), m.start() + len(m.group(0).rstrip())
 
 
-# ---------- Spot the figures and Find opportunities ----------
+# ---------- Find figures of speech and Where to add a technique ----------
 # Both read the whole piece and mark the writer's own words. The model proposes only the anchors (quotes), the ids
 # and the "why here"; every name and definition the page shows comes from this library, and every id and anchor is
 # checked here. Anything that doesn't match the library or the text is dropped and counted.
@@ -2406,7 +2408,7 @@ def check_figures(data, body: str) -> dict:
 
 
 def check_opps(data, body: str, spotted=None) -> dict:
-    """Find opportunities, ranked as the model ranked them. Each names a real library item and is pinned to the
+    """Where to add a technique, ranked as the model ranked them. Each names a real library item and is pinned to the
     writer's exact words; it never touches the strongest line (``keep``), and a figure is never proposed where Spot
     the figures found that same figure on the same words."""
     if not isinstance(data, dict) or not isinstance(data.get("opportunities"), list):

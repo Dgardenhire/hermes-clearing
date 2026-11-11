@@ -2,7 +2,8 @@
 // harness/check-walk.mjs; these test the rules it runs on.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { aboutWords, caretFor, placeNote, reopen, usageLine } from '../../desktop/src/walk.js'
+import { readFileSync } from 'node:fs'
+import { aboutWords, caretFor, marginMax, placeNote, reopen, usageLine } from '../../desktop/src/walk.js'
 
 const view = { viewTop: 54, viewBottom: 900, marginTop: -2000, noteHeight: 300, askRoom: 104 }
 
@@ -50,4 +51,18 @@ test('History says how much the model read in words, not tokens', () => {
   assert.equal(usageLine({ passes: 0 }), '')
   assert.equal(aboutWords(undefined), '0')
   assert.ok(!/token/i.test(usageLine({ passes: 3, tokens_in: 9000, tokens_out: 800 })))
+})
+
+test('the margin lists end above the Ask line, measured from the pane the room has, not the whole window', () => {
+  // A 760 px page area, the margin's first card 50 px down: the list may be 606 px tall, ending 104 px above the
+  // bottom, where the Ask line and the room under it sit.
+  assert.equal(marginMax({ viewHeight: 760, marginOffset: 50, askRoom: 104 }), 606)
+  // A pane too short to be useful still gets a list that scrolls, never a negative height.
+  assert.equal(marginMax({ viewHeight: 200, marginOffset: 50, askRoom: 104 }), 160)
+  // Read my piece's list, the figures and the techniques, and a long note all take the measured limit.
+  const css = readFileSync(new URL('../../desktop/src/styles.js', import.meta.url), 'utf8') + readFileSync(new URL('../../desktop/src/spots.jsx', import.meta.url), 'utf8')
+  for (const sel of ['.cl-roomread{', '.cl-margin .cl-spot{', '.cl-note[data-long]{']) {
+    const rule = css.slice(css.indexOf(sel), css.indexOf('}', css.indexOf(sel)))
+    assert.match(rule, /max-height:var\(--cl-margin-max,/, sel)
+  }
 })

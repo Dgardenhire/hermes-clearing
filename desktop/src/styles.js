@@ -2,11 +2,15 @@
 // room follows light and dark and the writer's accent live. The writer's words are set in Libre Caslon Text;
 // everything the editor or the app says is in Hermes's own sans. Nothing is dimmed below 94% of the theme's
 // text color, nothing is set below 12.5px, and corners follow the host's --radius-md (2px).
-import { FONT_ITALIC, FONT_REGULAR, SCENE_DARK, SCENE_LIGHT, SCENE_MARSH } from './assets.gen.js'
+import { FONT_ITALIC, FONT_REGULAR } from './assets.gen.js'
+
+// The scene photographs arrive after the stylesheet (scenes.js): the room's style sets --cl-img-snow, --cl-img-marsh
+// and --cl-img-tide as each one loads, and until then a scene shows the paper color, as the plain scene does.
+const SCENE_LIGHT = 'var(--cl-img-snow,none)', SCENE_MARSH = 'var(--cl-img-marsh,none)', SCENE_DARK = 'var(--cl-img-tide,none)'
 
 export const CSS = `
-@font-face{font-family:"Clearing Caslon";src:url(${FONT_REGULAR}) format("truetype");font-weight:400 700;font-style:normal;font-display:block}
-@font-face{font-family:"Clearing Caslon";src:url(${FONT_ITALIC}) format("truetype");font-weight:400 700;font-style:italic;font-display:block}
+@font-face{font-family:"Clearing Caslon";src:url(${FONT_REGULAR}) format("woff2");font-weight:400 700;font-style:normal;font-display:block}
+@font-face{font-family:"Clearing Caslon";src:url(${FONT_ITALIC}) format("woff2");font-weight:400 700;font-style:italic;font-display:block}
 .cl-room{
   --cl-base:var(--ui-base,currentColor);
   --cl-ink:var(--ui-text-primary,color-mix(in srgb,var(--cl-base) 94%,transparent));
@@ -16,33 +20,34 @@ export const CSS = `
   --cl-on-accent:var(--dt-primary-foreground,var(--cl-paper));
   --cl-stroke:color-mix(in srgb,var(--cl-accent) 16%,color-mix(in srgb,var(--cl-base) 14%,transparent));
   --cl-mark:color-mix(in srgb,var(--cl-accent) 72%,var(--cl-base));
+  --cl-mark-text:color-mix(in srgb,var(--cl-accent) 30%,var(--cl-base)); /* accent-tinted text that clears 4.5:1 over every scene and accent */
   --cl-wash:color-mix(in srgb,var(--cl-accent) 15%,transparent);
   --cl-radius:var(--radius-md,2px);
   --cl-shadow:0 0 0 1px color-mix(in srgb,var(--cl-base) 8%,transparent),0 .5rem .75rem -.375rem rgba(0,0,0,.08),0 1.25rem 1.75rem -.875rem rgba(0,0,0,.12);
   --cl-page:"Clearing Caslon","Libre Caslon Text",Charter,Georgia,serif;
   --cl-sans:var(--font-sans,system-ui,-apple-system,"Segoe UI",sans-serif);
-  --cl-scene:url(${SCENE_LIGHT});
+  --cl-scene:${SCENE_LIGHT};
   --cl-veil:color-mix(in srgb,var(--cl-paper) 34%,transparent);
   position:relative;height:100%;min-height:0;overflow:hidden;container-type:inline-size;
   background:var(--cl-scene) center 64%/cover no-repeat,var(--cl-paper);
   color:var(--cl-ink);font-family:var(--cl-sans);font-size:13.5px;line-height:1.45;-webkit-font-smoothing:antialiased;
 }
-:root.dark .cl-room{--cl-scene:url(${SCENE_DARK});--cl-veil:color-mix(in srgb,var(--cl-paper) 30%,transparent)}
+:root.dark .cl-room{--cl-scene:${SCENE_DARK};--cl-veil:color-mix(in srgb,var(--cl-paper) 30%,transparent)}
 .cl-room[data-contrast=high]{--cl-veil:color-mix(in srgb,var(--cl-paper) 64%,transparent);--cl-ink:var(--ui-text-primary,var(--cl-base))}
 :root.dark .cl-room[data-contrast=high]{--cl-veil:color-mix(in srgb,var(--cl-paper) 62%,transparent)}
 /* Every scene is its own choice in light and dark (Damon, Nov 8: dark mode used to swap every scene for Night Tide,
    so choosing one changed nothing). A light picture under a dark theme, or a dark picture under a light one, gets a
    deeper veil so the writer's words keep their contrast; the picture itself never changes. The writer's own picture
    arrives as --cl-scene on the room's style. */
-.cl-room[data-scene=snow]{--cl-scene:url(${SCENE_LIGHT})}
-.cl-room[data-scene=marsh]{--cl-scene:url(${SCENE_MARSH})}
-.cl-room[data-scene=tide]{--cl-scene:url(${SCENE_DARK});--cl-veil:color-mix(in srgb,var(--cl-paper) 70%,transparent)}
+.cl-room[data-scene=snow]{--cl-scene:${SCENE_LIGHT}}
+.cl-room[data-scene=marsh]{--cl-scene:${SCENE_MARSH}}
+.cl-room[data-scene=tide]{--cl-scene:${SCENE_DARK};--cl-veil:color-mix(in srgb,var(--cl-paper) 70%,transparent)}
 .cl-room[data-scene=own]{--cl-veil:color-mix(in srgb,var(--cl-paper) 52%,transparent)}
 /* At night the two light scenes keep their own cast under the veil (cold slate for snow, peat for the marsh), so they
    never read as the same grey (Loop 2 critics); the veil stays as dark as before, so the text keeps its contrast. */
-:root.dark .cl-room[data-scene=snow]{--cl-scene:url(${SCENE_LIGHT});--cl-veil:color-mix(in srgb,color-mix(in srgb,var(--cl-paper) 70%,#1b2a40) 74%,transparent)}
-:root.dark .cl-room[data-scene=marsh]{--cl-scene:url(${SCENE_MARSH});--cl-veil:color-mix(in srgb,color-mix(in srgb,var(--cl-paper) 70%,#2e2a17) 74%,transparent)}
-:root.dark .cl-room[data-scene=tide]{--cl-scene:url(${SCENE_DARK});--cl-veil:color-mix(in srgb,var(--cl-paper) 30%,transparent)}
+:root.dark .cl-room[data-scene=snow]{--cl-scene:${SCENE_LIGHT};--cl-veil:color-mix(in srgb,color-mix(in srgb,var(--cl-paper) 70%,#1b2a40) 74%,transparent)}
+:root.dark .cl-room[data-scene=marsh]{--cl-scene:${SCENE_MARSH};--cl-veil:color-mix(in srgb,color-mix(in srgb,var(--cl-paper) 70%,#2e2a17) 74%,transparent)}
+:root.dark .cl-room[data-scene=tide]{--cl-scene:${SCENE_DARK};--cl-veil:color-mix(in srgb,var(--cl-paper) 30%,transparent)}
 :root.dark .cl-room[data-scene=own]{--cl-veil:color-mix(in srgb,var(--cl-paper) 66%,transparent)}
 .cl-room[data-scene=tide][data-contrast=high],.cl-room[data-scene=own][data-contrast=high]{--cl-veil:color-mix(in srgb,var(--cl-paper) 82%,transparent)}
 :root.dark .cl-room[data-scene=snow][data-contrast=high],:root.dark .cl-room[data-scene=marsh][data-contrast=high],:root.dark .cl-room[data-scene=own][data-contrast=high]{--cl-veil:color-mix(in srgb,var(--cl-paper) 84%,transparent)}
@@ -108,21 +113,21 @@ export const CSS = `
 /* Words that came from a suggestion stay dotted until the writer edits them. */
 .cl-mk[data-kind=kept][data-from=model]{text-decoration-thickness:2px;text-underline-offset:6px}
 .cl-preview{font-family:var(--cl-page);font-size:19.5px;line-height:1.74;white-space:pre-wrap;overflow-wrap:break-word}
-.cl-cut{text-decoration:line-through;text-decoration-color:var(--cl-mark);text-decoration-thickness:1.5px;color:color-mix(in srgb,var(--cl-ink) 64%,transparent);cursor:pointer;border-radius:2px;transition:background-color 120ms ease,color 120ms ease}
+.cl-cut{text-decoration:line-through;text-decoration-color:var(--cl-mark);text-decoration-thickness:1.5px;color:color-mix(in srgb,var(--cl-ink) 90%,transparent);cursor:pointer;border-radius:2px;transition:background-color 120ms ease,color 120ms ease}
 .cl-cut:hover,.cl-cut[data-on]{background:var(--cl-wash)}
 .cl-cut[data-kept]{text-decoration:underline dotted;text-decoration-color:var(--cl-mark);text-underline-offset:5px;color:inherit}
 .cl-text [data-id]{scroll-margin-top:72px}
 .cl-cut:focus-visible{outline:2px solid var(--cl-accent);outline-offset:1px}
 .cl-preview .cl-proposed-page{font-family:var(--cl-sans);font-size:18px;line-height:1.7;box-shadow:inset 3px 0 0 var(--cl-accent);padding-left:16px;margin-left:-19px;display:block}
-/* A suggestion tried inside a sentence: the editor's sans, washed and underlined, until the writer uses it. */
-.cl-preview .cl-proposed-page[data-inline]{display:inline;box-shadow:none;padding:0 2px;margin:0;font-family:var(--cl-page);font-size:inherit;color:var(--cl-mark);background:var(--cl-wash);text-decoration:underline dashed;text-decoration-color:var(--cl-mark);text-underline-offset:5px;border-radius:2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+/* A suggestion tried inside a sentence: the page's own face, washed and dash-underlined, until the writer uses it. */
+.cl-preview .cl-proposed-page[data-inline]{display:inline;box-shadow:none;padding:0 2px;margin:0;font-family:var(--cl-page);font-size:inherit;color:var(--cl-mark-text);background:var(--cl-wash);text-decoration:underline dashed;text-decoration-color:var(--cl-mark);text-underline-offset:5px;border-radius:2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 
 /* The model's words, until the writer types inside them: a faint wash, and a 2 px tick in the gutter beside the line. */
 .cl-text.cl-ai .cl-mk{text-decoration:none;background:color-mix(in srgb,var(--cl-accent) 10%,transparent);border-radius:2px}
 .cl-ticks{position:absolute;top:0;left:-18px;width:2px;height:100%;pointer-events:none}
 .cl-ticks i{position:absolute;left:0;width:2px;background:var(--cl-accent);border-radius:1px}
 /* A proofreader's mark: the writer's words struck in their own face, the suggestion inserted after them in sans. */
-.cl-preview .cl-struck{text-decoration:line-through;text-decoration-color:var(--cl-accent);text-decoration-thickness:1.5px;color:color-mix(in srgb,var(--cl-ink) 64%,transparent);margin-right:.3em}
+.cl-preview .cl-struck{text-decoration:line-through;text-decoration-color:var(--cl-accent);text-decoration-thickness:1.5px;color:color-mix(in srgb,var(--cl-ink) 90%,transparent);margin-right:.3em}
 .cl-btn.cl-last{margin-left:0}
 /* the floating card: other words, a rewrite, a next sentence, the passage tools; in the page beside its words */
 .cl-pop{position:absolute;z-index:5;width:min(384px,100%)}
@@ -145,6 +150,11 @@ export const CSS = `
 .cl-chip:hover,.cl-chip:focus-visible{background:var(--cl-wash)}
 .cl-chipfield{display:block;width:100%;font:inherit;font-size:13px;color:var(--cl-ink);background:none;border:0;border-bottom:1px solid var(--cl-stroke);padding:5px 2px;caret-color:var(--cl-accent)}
 .cl-chipfield:focus-visible{outline:none;border-bottom-color:var(--cl-accent)}
+/* Focus on the writing fields (WCAG 2.4.7): while the title or the page has the keyboard, a 2px accent rule runs down
+   the margin 16px left of the words, not a box around the page, so typing stays quiet but where the keys go is always
+   visible. The Ask line underlines in the accent. */
+.cl-page:has(.cl-titlefield:focus-visible,.cl-body:focus-visible)::before{content:"";position:absolute;left:-16px;top:4px;bottom:4px;width:2px;border-radius:1px;background:var(--cl-accent);pointer-events:none}
+.cl-ask:focus-within{border-bottom-color:var(--cl-accent);box-shadow:0 1px 0 0 var(--cl-accent)}
 .cl-why{margin:8px 0 0 !important;padding-left:10px;box-shadow:inset 2px 0 0 var(--cl-stroke)}
 /* The provenance line closes the card whatever comes before it in the source. */
 .cl-note:has(> .cl-prov){display:flex;flex-direction:column}
@@ -177,12 +187,21 @@ export const CSS = `
 .cl-reason{font-size:13px;line-height:1.45;margin:0 0 14px !important}
 .cl-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .cl-btn{font:inherit;font-size:13px;font-weight:500;line-height:1.25;border-radius:var(--cl-radius);padding:7px 13px;border:0;background:none;color:var(--cl-ink);cursor:pointer;white-space:nowrap}
-.cl-btn[data-v=primary]{background:color-mix(in srgb,var(--cl-accent) 72%,#0d1b33);color:var(--cl-on-accent)}
+.cl-btn[data-v=primary]{--cl-fill:color-mix(in srgb,var(--cl-accent) 80%,var(--cl-base));background:var(--cl-fill);color:var(--cl-on-accent)}
+:root.dark .cl-btn[data-v=primary]{--cl-fill:var(--cl-accent)} /* by day a deeper ink from the theme's own text color; at night the accent itself */
+/* The primary's text is white or black, whichever the fill needs: y in xyz-d65 is WCAG's relative luminance, and below
+   0.1791 white wins, above it black, so every accent in either theme clears 4.5:1 (4.58:1 at worst, at the crossover).
+   Hover moves the fill away from its text, so contrast only rises. Without relative colors, Hermes's own pair stays. */
+@supports (color:color(from red xyz-d65 x y z)){
+.cl-btn[data-v=primary]{color:color(from var(--cl-fill) xyz-d65 calc(clamp(0,(0.1791 - y) * 100000,1) * 0.9505) clamp(0,(0.1791 - y) * 100000,1) calc(clamp(0,(0.1791 - y) * 100000,1) * 1.089))}
+.cl-btn[data-v=primary]:hover{background:color-mix(in srgb,var(--cl-fill) 86%,color(from var(--cl-fill) xyz-d65 calc(clamp(0,(y - 0.1791) * 100000,1) * 0.9505) clamp(0,(y - 0.1791) * 100000,1) calc(clamp(0,(y - 0.1791) * 100000,1) * 1.089)))}
+}
 .cl-version-now{font-size:12.5px;align-self:center}
 .cl-version-change{grid-column:1/-1;margin:2px 0 0 !important;font-size:13px;line-height:1.4;font-family:var(--cl-serif,inherit)}
 .cl-version-change s{text-decoration-color:var(--cl-accent)}
-.cl-btn[data-v=primary]:hover{filter:brightness(1.08)}
 .cl-btn[data-v=ghost]{box-shadow:inset 0 0 0 1px var(--cl-stroke)}
+.cl-btn[data-v=danger]{font-weight:600;box-shadow:inset 0 0 0 1.5px var(--cl-ink)}
+.cl-btn[data-v=danger]:hover{background:var(--cl-wash)}
 .cl-btn[data-v=ghost]:hover,.cl-btn[data-v=link]:hover{background:var(--cl-wash)}
 .cl-btn[data-v=link]{padding:7px 4px;margin-left:auto;text-decoration:underline;text-decoration-color:var(--cl-stroke);text-underline-offset:3px}
 .cl-btn:disabled{cursor:default;box-shadow:inset 0 0 0 1px var(--cl-stroke);background:none;color:var(--cl-ink)}
@@ -299,6 +318,12 @@ export const CSS = `
 .cl-version span{font-size:12.5px;grid-column:1}
 .cl-version .cl-btn{grid-row:1 / span 2;grid-column:2}
 .cl-version .cl-version-now{grid-row:1 / span 2;grid-column:2}
+.cl-trash-acts{grid-row:1 / span 2;grid-column:2;display:flex;gap:6px}
+.cl-trash-acts .cl-btn{grid-row:auto;grid-column:auto}
+.cl-confirm{grid-column:1/-1;margin:8px 0 2px;padding:10px 12px;border-radius:var(--cl-radius);box-shadow:inset 2px 0 0 var(--cl-ink),inset 0 0 0 1px var(--cl-stroke)}
+.cl-sheet .cl-confirm p{margin:0 0 8px;font-size:13.5px}
+.cl-sheet .cl-confirm .cl-row{margin-top:0}
+.cl-sheet > .cl-confirm{margin-top:10px}
 .cl-credits{display:grid;gap:10px;margin:8px 0 0;padding:0;list-style:none}
 .cl-credits li{font-size:13.5px;line-height:1.5}
 .cl-credits b{font-weight:600}
@@ -336,7 +361,7 @@ export const CSS = `
 .cl-suggest-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 /* The editor's note, cut down: the change as the title, the writer's words on one upright line, the reason. */
 .cl-hero-head{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}
-.cl-hero-n{flex:none;display:inline-grid;place-items:center;width:22px;height:22px;font-size:12.5px;font-weight:600;color:var(--cl-accent);border-radius:var(--cl-radius);box-shadow:inset 0 0 0 1.5px var(--cl-accent);transform:translateY(-2px)}
+.cl-hero-n{flex:none;display:inline-grid;place-items:center;width:22px;height:22px;font-size:12.5px;font-weight:600;color:var(--cl-mark-text);border-radius:var(--cl-radius);box-shadow:inset 0 0 0 1.5px var(--cl-accent);transform:translateY(-2px)}
 .cl-hero-title{flex:1;min-width:0;font-size:16px;font-weight:600;line-height:1.35;margin:0}
 .cl-suggest-title{font-size:15px}
 .cl-hero-pos{flex:none;font-size:12.5px;font-variant-numeric:tabular-nums}
@@ -350,7 +375,7 @@ export const CSS = `
 .cl-used-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .cl-used-row .cl-usedline{margin-right:auto !important}
 /* Read my piece in the room: one card, the close button in its corner, the compact desk at its foot. */
-.cl-roomread{max-height:calc(100vh - 210px);overflow:auto;overscroll-behavior:contain;position:relative;background:var(--cl-surface);border-radius:var(--cl-radius);box-shadow:var(--cl-shadow);padding:18px 20px 14px;animation:cl-in 120ms ease-out both}
+.cl-roomread{max-height:var(--cl-margin-max,calc(100vh - 210px));overflow:auto;overscroll-behavior:contain;position:relative;background:var(--cl-surface);border-radius:var(--cl-radius);box-shadow:var(--cl-shadow);padding:18px 20px 14px;animation:cl-in 120ms ease-out both}
 .cl-roomread::after{content:'';position:sticky;bottom:-14px;display:block;height:30px;margin:0 -20px -14px;background:linear-gradient(color-mix(in srgb,var(--cl-surface) 0%,transparent),var(--cl-surface) 85%);pointer-events:none}
 .cl-roomread > .cl-note{background:none;box-shadow:none;padding:0;animation:none}
 .cl-roomread .cl-read-changes{grid-template-columns:minmax(0,1fr)}
@@ -369,7 +394,7 @@ export const CSS = `
 .cl-text .cl-mk[data-n]{text-decoration-color:color-mix(in srgb,var(--cl-ink) 30%,transparent);text-decoration-thickness:1px}
 .cl-text .cl-mk[data-n][data-on]{text-decoration-color:var(--cl-accent);text-decoration-thickness:2px}
 .cl-nums{position:absolute;top:0;left:-46px;width:24px;height:100%;pointer-events:none}
-.cl-nums b{position:absolute;left:0;display:grid;place-items:center;width:22px;height:22px;margin-top:6px;font-family:var(--cl-sans);font-size:12.5px;font-weight:600;color:var(--cl-accent);background:var(--cl-surface);border-radius:var(--cl-radius);box-shadow:inset 0 0 0 1px var(--cl-stroke)}
+.cl-nums b{position:absolute;left:0;display:grid;place-items:center;width:22px;height:22px;margin-top:6px;font-family:var(--cl-sans);font-size:12.5px;font-weight:600;color:var(--cl-mark-text);background:var(--cl-surface);border-radius:var(--cl-radius);box-shadow:inset 0 0 0 1px var(--cl-stroke)}
 .cl-nums b[data-on]{box-shadow:inset 0 0 0 1.5px var(--cl-accent)}
 /* Words just used: a neutral wash that settles into the model-words wash over two seconds. */
 .cl-text.cl-ai .cl-mk[data-fresh]{animation:cl-fresh 2.2s ease-out both}
@@ -392,7 +417,7 @@ export const CSS = `
 .cl-rev{display:grid;gap:6px;justify-items:start;padding-bottom:12px;border-bottom:1px solid var(--cl-stroke)}
 .cl-rev b{font-weight:600;font-size:13.5px}
 .cl-rev p{font-size:14px;line-height:1.5}
-.cl-note[data-long]{max-height:calc(100vh - 220px);overflow:auto}
+.cl-note[data-long]{max-height:var(--cl-margin-max,calc(100vh - 220px));overflow:auto}
 .cl-rule{display:block;width:100%;font:inherit;font-size:14.5px;line-height:1.5;color:var(--cl-ink);background:none;border:0;border-radius:var(--cl-radius);box-shadow:inset 0 0 0 1px var(--cl-stroke);padding:8px 10px;margin:0 0 10px;resize:vertical;caret-color:var(--cl-accent)}
 .cl-rule:focus-visible{outline:2px solid var(--cl-accent);outline-offset:1px}
 .cl-rules{display:grid;gap:4px}

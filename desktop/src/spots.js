@@ -1,10 +1,10 @@
-// Spot the figures and Find opportunities: the page side. The model proposes only where (a quote), which library item
+// Find figures of speech and Where to add a technique: the page side. The model proposes only where (a quote), which library item
 // (an id) and why; the name and definition shown come from the library itself (LIB, the same JSON the backend reads),
 // looked up here by id. An id the library doesn't have shows nothing.
 
 export const TYPE_LABEL = { figure: 'Figure', method: 'Method', craft: 'Craft step' }
 
-// The methods Find opportunities may name (library.py OPP_METHODS): the ones that work on one passage.
+// The methods Where to add a technique may name (library.py OPP_METHODS): the ones that work on one passage.
 export const OPP_METHODS = new Set(['bluf', 'hook', 'transition', 'analogy', 'simplify', 'tracks', 'reader', 'objections', 'economy', 'tension', 'mom', 'specificity', 'momentum'])
 
 const cap = s => (s ? s[0].toUpperCase() + s.slice(1) : s)
@@ -41,7 +41,7 @@ export function libraryItem(lib, id) {
   return null
 }
 
-// The marks a Spot the figures result draws in the page, one per figure, in page order. Only figures the library
+// The marks a Find figures of speech result draws in the page, one per figure, in page order. Only figures the library
 // knows are kept, with the library's name and definition.
 export function figureMarks(lib, result, stamp = Date.now()) {
   return ((result && result.figures) || []).map((f, i) => {
@@ -51,7 +51,7 @@ export function figureMarks(lib, result, stamp = Date.now()) {
   }).filter(Boolean)
 }
 
-// The marks a Find opportunities result draws, numbered by rank in the page and the margin.
+// The marks a Where to add a technique result draws, numbered by rank in the page and the margin.
 export function oppMarks(lib, result, stamp = Date.now()) {
   return ((result && result.opportunities) || []).map((o, i) => {
     const it = libraryItem(lib, o.id)

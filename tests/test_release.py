@@ -49,7 +49,7 @@ class ReleaseTest(unittest.TestCase):
         m = manifest()
         self.assertEqual(m["name"], "clearing")
         self.assertEqual(m["manifest_version"], "2")
-        self.assertEqual(m["requires_hermes"], '">=0.22.6"')  # ctx.files arrived in 0.22.6
+        self.assertEqual(m["requires_hermes"], '">=0.21.6"')  # the page feature-detects ctx.files (0.22.6); see HERMES-FLOORS.md
         self.assertEqual(m["provides_tools"], "[]")
         self.assertEqual(m["provides_hooks"], "[" + ", ".join(ctx.hooks) + "]")
         self.assertEqual(ctx.tasks, ["clearing_editor"])
