@@ -1,8 +1,24 @@
 # The Clearing for Hermes
 
+![The Clearing card: a piece of writing open beside the editing menu](docs/catalog/card.jpg)
+
+[![The Clearing: watch the 30-second demo](docs/demo-poster.jpg)](https://linchpin.studio/hermes/video/clearing.mp4)
+
+**[Watch the 30-second demo](https://linchpin.studio/hermes/video/clearing.mp4)** · [Manual](https://linchpin.studio/hermes/clearing/manual/) · [All four plugins](https://linchpin.studio/hermes/)
+
 The Clearing is a writing editor inside Hermes Agent. Paste a draft and press **Read my piece**: it marks your own sentences with what to change, most important first, and changes nothing until you press **Use this**. Run any of 159 editing methods by name, from Strunk's composition rules to 44 figures of speech. Three reviewers can read it separately and argue it out. Your writing stays on your computer.
 
 You write in one page, set in Libre Caslon Text, over a scene that follows your Hermes theme (Snow Light, Quiet Marsh, Night Tide, a plain page, or a picture of your own). The editor's notes are set in Hermes's own sans. Its suggested words are marked in the page so you can tell whose words are whose: a change inside a sentence keeps the page's typeface on a tinted wash with a dashed underline, a whole new passage is set in the sans with an accent rule beside it, and words you keep from the editor carry a faint tint and a tick in the margin until you type inside them. Every note sits beside the words it is about and names one change and why. **Show me** draws the change into your page: your words struck through, the editor's version after. **Use this** keeps it, **Keep mine** leaves your words, and **Undo** takes a kept change back out.
+
+## What it looks like
+
+![Read my piece: the draft with its sentences marked, most important change first](docs/shots/live/read-my-piece.jpg)
+
+![One suggestion open: the old sentence struck through, the new one highlighted, and a bracket where a source is missing. Use this or Keep mine](docs/shots/live/show-me.jpg)
+
+![All 159 methods, listed by name](docs/shots/live/all-methods.jpg)
+
+![A draft open with the editing menu: Read my piece, Find figures of speech, All 159 methods](docs/shots/live/desk.jpg)
 
 ## Requirements
 
@@ -87,7 +103,7 @@ Not sent to a model: Quick check, Other words, reading Word files and PDFs, your
 
 ## Credits
 
-The named editorial methods come from [Compound Writing](https://github.com/EveryInc/compound-writing) by Every (Katie Parrott). The Clearing's instructions, checks and workflows are written independently, no Compound Writing file is included, and The Clearing is not affiliated with or endorsed by Every. The craft techniques draw on published books about writing, named in `library/additions.json` under `credits`; none of their text is reproduced. Libre Caslon Text is used under the SIL Open Font License 1.1 (`desktop/assets/Libre-Caslon-Text-OFL.txt`). Other words uses Open English WordNet 2025 (CC BY 4.0, by the Open English WordNet team) and WordNet 3.1 (Copyright 2011 Princeton University, under the WordNet license); the full notice is in `library/thesaurus/NOTICE.txt`. The About screen lists the typeface and the dictionary.
+The Clearing's 159 methods have their own names and instructions. They draw on long-standing editing and craft practice, including Strunk, Zinsser, McPhee, Le Guin, Forsyth and Minto, and 33 of them are adapted from [Compound Writing](https://github.com/EveryInc/compound-writing) by Every (Katie Parrott). The About screen lists every source. The typeface is Libre Caslon Text (SIL Open Font License 1.1). Other words uses Open English WordNet 2025 (CC BY 4.0) and WordNet 3.1 (Princeton University).
 
 The Clearing is an independent plugin, not made by Nous Research.
 
@@ -103,4 +119,4 @@ The Clearing is an independent plugin, not made by Nous Research.
 
 ## License
 
-The Clearing's own code and text are under the [PolyForm Shield License 1.0.0](LICENSE) (Required Notice: Copyright (c) 2026 Damon Gardenhire). In plain English: it is free to use, including for paid writing work; you may not use this code to offer a competing product. The desktop bundle includes hermes-ui-kit, the author's own code, under the same license. The fonts, the WordNet data and the other third-party material listed under Credits keep their own licenses. All of this is in [NOTICE](NOTICE).
+Free to use, including for paid writing work. You may not use this code to offer a competing product. [PolyForm Shield License 1.0.0](LICENSE), Copyright (c) 2026 Damon Gardenhire. Fonts, the WordNet data and other third-party material keep their own licenses, listed in [NOTICE](NOTICE).
