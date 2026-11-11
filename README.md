@@ -103,7 +103,7 @@ Not sent to a model: Quick check, Other words, reading Word files and PDFs, your
 
 ## Credits
 
-The Clearing's 159 methods have their own names and instructions. They draw on long-standing editing and craft practice, including Strunk, Zinsser, McPhee, Le Guin, Forsyth and Minto, and 33 of them are adapted from [Compound Writing](https://github.com/EveryInc/compound-writing) by Every (Katie Parrott). The About screen lists every source. The typeface is Libre Caslon Text (SIL Open Font License 1.1). Other words uses Open English WordNet 2025 (CC BY 4.0) and WordNet 3.1 (Princeton University).
+The Clearing applies 159 methods and techniques drawn from timeless editing and craft practice.
 
 The Clearing is an independent plugin, not made by Nous Research.
 
