@@ -118,7 +118,8 @@ class ReleaseTest(unittest.TestCase):
         notice = (ROOT / "NOTICE").read_text(encoding="utf-8")
         self.assertIn("Required Notice: Copyright (c) 2026 Damon Gardenhire", notice)
         self.assertIn("Required Notice: Copyright (c) 2026 Damon Gardenhire", (ROOT / "LICENSE").read_text(encoding="utf-8"))
-        self.assertIn("hermes-ui-kit is the author's own code", notice)
+        self.assertIn("hermes-ui-kit", notice)
+        self.assertIn("also by\nDamon Gardenhire", notice)
         self.assertIn("same PolyForm Shield License 1.0.0", notice)
         parts = re.findall(r"hermes-ui-kit/src/(\w+)\.js", (ROOT / "desktop" / "plugin.js").read_text(encoding="utf-8"))
         self.assertTrue(parts)
@@ -136,6 +137,9 @@ class ReleaseTest(unittest.TestCase):
                               capture_output=True, text=True, timeout=60)
         self.assertEqual(proc.returncode, 1)
         self.assertIn("not a folder on this computer", proc.stderr)
+
+    @unittest.skipUnless((ROOT / "docs" / "RELEASE.md").exists(), "docs/RELEASE.md is a working note the public package leaves out")
+    def test_release_notes_name_the_release_check(self):
         self.assertIn("scripts/release-check.sh", (ROOT / "docs" / "RELEASE.md").read_text(encoding="utf-8"))
 
     @unittest.skipUnless(UPSTREAM.exists(), "upstream Compound Writing files are not on this computer")

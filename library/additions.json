@@ -388,7 +388,7 @@
  "credits": [
   {
    "name": "Compound Writing, by Every (Katie Parrott)",
-   "what": "The source of the named editorial methods. The Clearing's instructions, checks and workflows are written independently, and no Compound Writing file is included. The Clearing is not affiliated with or endorsed by Every.",
+   "what": "33 of The Clearing's methods are adapted from it.",
    "url": "https://github.com/EveryInc/compound-writing"
   },
   {
@@ -454,7 +454,7 @@
   },
   {
    "name": "Open English WordNet 2025, by the Open English WordNet team, and WordNet 3.1, Princeton University",
-   "what": "The dictionary behind Other words. Open English WordNet is CC BY 4.0; WordNet 3.1 is under the Princeton WordNet license. The notice is in library/thesaurus/NOTICE.txt.",
+   "what": "The dictionary behind Other words. Open English WordNet is CC BY 4.0; WordNet 3.1 is under the Princeton WordNet license.",
    "url": "https://en-word.net",
    "software": true
   }

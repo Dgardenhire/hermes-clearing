@@ -6,11 +6,8 @@ The Clearing's own code and text are under the PolyForm Shield License 1.0.0 (LI
 
 Bundled code
 
-desktop/plugin.js includes code from hermes-ui-kit (its src/ folder: register, hooks, primitives, states, styles
-and tokens), compiled in by the kit's scripts/build.mjs. hermes-ui-kit is the author's own code, written by
-Damon Gardenhire, the author of The Clearing. Its package.json says "UNLICENSED" because the kit is not published
-on its own. The copy included in The Clearing is included under the same PolyForm Shield License 1.0.0 as the rest
-of The Clearing, with the Required Notice above.
+The desktop bundle includes hermes-ui-kit (register, hooks, primitives, states, styles and tokens), also by
+Damon Gardenhire, under the same PolyForm Shield License 1.0.0.
 
 Third-party material, under its own licenses
 

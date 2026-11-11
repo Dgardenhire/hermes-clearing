@@ -50,6 +50,11 @@ NEEDS_MODEL = ("Dictation needs Hermes's speech model, which hasn't been downloa
                "chat so Hermes downloads it, then try again here.")
 NO_SPEECH = "No words were heard. Check the microphone, then try again."
 FAILED = "Your recording couldn't be turned into text just now. Nothing was added. Try again."
+# Hermes has no public speech-to-text call for plugins (no ctx.* verb, nothing in hermes_cli/data/plugin_api.json),
+# so engine 1 uses tools.voice_mode.transcribe_recording. When a Hermes release moves or reshapes it, the writer is
+# told that plainly, not sent to Settings to turn on something that is already on.
+HERMES_CHANGED = ("This version of Hermes doesn't let The Clearing use its speech-to-text, so dictation is off for now. "
+                  "Typing works as always. An update to The Clearing will bring dictation back.")
 
 
 class DictationError(ValueError):
@@ -71,6 +76,19 @@ def _hermes_fn():
     except Exception:
         return None
     return transcribe_recording if callable(transcribe_recording) else None
+
+
+def _inside_hermes():
+    """True when Hermes's public config module is importable, so a missing engine 1 means Hermes moved it."""
+    try:
+        import hermes_cli.config  # noqa: F401  (public plugin API)
+    except Exception:
+        return False
+    return True
+
+
+def _not_ready():
+    return HERMES_CHANGED if _hermes_fn() is None and _inside_hermes() else NOT_READY
 
 
 def _stt_config():
@@ -183,6 +201,8 @@ def plan() -> dict:
         return dict(out, ready=True, engine="hermes", provider=provider, local=None, label=provider, message="")
     if own is not None:
         return dict(out, ready=True, engine="whisper", provider="whisper", local=True, label=LABELS["whisper"], message="")
+    if fn is None and _inside_hermes():
+        return dict(out, message=HERMES_CHANGED)
     return out
 
 
@@ -262,9 +282,14 @@ def _wav(src: Path, dest: Path):
 def _hermes(path: Path) -> str:
     fn = _hermes_fn()
     if fn is None:
-        raise DictationError(NOT_READY)
-    result = fn(str(path))
-    if not isinstance(result, dict):
+        raise DictationError(_not_ready())
+    try:
+        result = fn(str(path))
+    except Exception as e:  # a Hermes release that changed the function's arguments, or its own error
+        _log.info("clearing: Hermes's speech-to-text raised %s", type(e).__name__)
+        raise DictationError(FAILED) from e
+    if not isinstance(result, dict):  # a Hermes release that changed what it returns
+        _log.info("clearing: Hermes's speech-to-text returned %s, not a dict", type(result).__name__)
         raise DictationError(FAILED)
     if result.get("success"):
         return str(result.get("transcript") or "").strip()

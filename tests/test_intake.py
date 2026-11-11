@@ -3,7 +3,9 @@ only), the writer's own scene picture, and dictation that never leaves the compu
 import base64
 import json
 import struct
+import sys
 import time
+import types
 import unittest
 import zlib
 from pathlib import Path
@@ -263,6 +265,8 @@ class DictationTest(unittest.TestCase):
         reset()
         self.sent = []
         self._saved = (dictation._hermes_fn, dictation._stt_config, dictation.own_model, dict(dictation.ENGINES), dictation._wav)
+        self._inside = dictation._inside_hermes
+        dictation._inside_hermes = lambda: False
         dictation._hermes_fn = lambda: (lambda path: {"success": True, "transcript": "x"})
         dictation._wav = lambda src, dest: None
         dictation.ENGINES["hermes"] = lambda path: self.sent.append(("hermes", Path(path).exists())) or "words from the cloud"
@@ -271,6 +275,7 @@ class DictationTest(unittest.TestCase):
 
     def tearDown(self):
         dictation._hermes_fn, dictation._stt_config, dictation.own_model, engines, dictation._wav = self._saved
+        dictation._inside_hermes = self._inside
         dictation.ENGINES.clear()
         dictation.ENGINES.update(engines)
 
@@ -325,6 +330,68 @@ class DictationTest(unittest.TestCase):
         with self.assertRaises(HTTPException) as cm:
             self.post()
         self.assertEqual(cm.exception.detail, dictation.FAILED)
+
+
+class HermesSpeechSeamTest(unittest.TestCase):
+    """Engine 1 is tools.voice_mode.transcribe_recording, which is not public plugin API (Hermes has no ctx.* or
+    documented speech-to-text call). A release that moves it or changes its shape must fail in plain words."""
+
+    NAMES = ("tools", "tools.voice_mode")
+
+    def setUp(self):
+        self._saved = {n: sys.modules[n] for n in self.NAMES if n in sys.modules}
+        self._inside = dictation._inside_hermes
+
+    def tearDown(self):
+        for n in self.NAMES:
+            sys.modules.pop(n, None)
+        sys.modules.update(self._saved)
+        dictation._inside_hermes = self._inside
+
+    def fake(self, **attrs):
+        pkg = types.ModuleType("tools")
+        pkg.__path__ = []
+        m = types.ModuleType("tools.voice_mode")
+        for k, v in attrs.items():
+            setattr(m, k, v)
+        pkg.voice_mode = m
+        sys.modules["tools"], sys.modules["tools.voice_mode"] = pkg, m
+
+    def test_a_moved_or_renamed_function_is_none(self):
+        self.fake()  # the module is there, the name is not
+        self.assertIsNone(dictation._hermes_fn())
+        self.fake(transcribe_recording="not a function")
+        self.assertIsNone(dictation._hermes_fn())
+        sys.modules["tools.voice_mode"] = None  # the module itself is gone: import raises
+        self.assertIsNone(dictation._hermes_fn())
+
+    def test_a_moved_function_says_so_and_does_not_send_the_writer_to_settings(self):
+        self.fake()
+        dictation._inside_hermes = lambda: True
+        with self.assertRaises(dictation.DictationError) as cm:
+            dictation._hermes(Path("/nowhere.wav"))
+        self.assertEqual(str(cm.exception), dictation.HERMES_CHANGED)
+        self.assertNotIn("Settings", dictation.HERMES_CHANGED)
+        saved = dictation.own_model
+        dictation.own_model = lambda: None
+        try:
+            self.assertEqual(dictation.plan()["message"], dictation.HERMES_CHANGED)
+        finally:
+            dictation.own_model = saved
+
+    def test_a_changed_signature_or_return_shape_fails_plainly(self):
+        def new_signature(path, *, required_option):
+            return {"success": True, "transcript": "x"}
+        self.fake(transcribe_recording=new_signature)
+        with self.assertRaises(dictation.DictationError) as cm:
+            dictation._hermes(Path("/nowhere.wav"))
+        self.assertEqual(str(cm.exception), dictation.FAILED)
+        self.fake(transcribe_recording=lambda path: "just a string now")
+        with self.assertRaises(dictation.DictationError) as cm:
+            dictation._hermes(Path("/nowhere.wav"))
+        self.assertEqual(str(cm.exception), dictation.FAILED)
+        self.fake(transcribe_recording=lambda path: {"success": True, "transcript": "  said words "})
+        self.assertEqual(dictation._hermes(Path("/nowhere.wav")), "said words")
 
 
 if __name__ == "__main__":
