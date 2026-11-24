@@ -40,7 +40,8 @@ def read_docx(data: bytes) -> tuple[str, str]:
     try:
         z = zipfile.ZipFile(io.BytesIO(data))
         info = z.getinfo("word/document.xml")
-    except (zipfile.BadZipFile, KeyError):
+    except (zipfile.BadZipFile, KeyError, ValueError, NotImplementedError, UnicodeDecodeError, EOFError, OSError):
+        # not a zip, or a damaged one: a negative offset, a name that is not text, a format version Python refuses
         raise DocxError("That file isn't a Word document The Clearing can read. Try a .docx, .md or .txt file.")
     if info.file_size > MAX_XML:
         raise DocxError("That Word file is too large to open. Open a shorter file, or paste a section.")
@@ -54,7 +55,7 @@ def read_docx(data: bytes) -> tuple[str, str]:
     _refuse_dtd(raw)
     try:
         root = ET.fromstring(raw)
-    except ET.ParseError:
+    except (ET.ParseError, LookupError, ValueError):
         raise DocxError("That Word file is damaged. Open it in Word, save it again, then try once more.")
     body = root.find(f"{W}body")
     if body is None:
@@ -91,7 +92,9 @@ def _refuse_dtd(raw: bytes) -> None:
     parser.ExternalEntityRefHandler = refuse
     try:
         parser.Parse(raw, True)
-    except expat.ExpatError:
+    except DocxError:  # a DTD or entity: refused by the handlers above, with their own message
+        raise
+    except (expat.ExpatError, LookupError, ValueError):  # LookupError: an encoding name Python doesn't know
         raise DocxError("That Word file is damaged. Open it in Word, save it again, then try once more.")
 
 

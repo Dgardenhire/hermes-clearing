@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.1.1, November 23, 2026
+
+Housekeeping after the catalog review. Nothing you see changes.
+
+- **Damaged Word files are refused plainly.** A Word file broken in certain ways (a zip with an impossible offset, a
+  zip format version Python doesn't handle, a file name that isn't text, or document XML that names an encoding
+  Python doesn't know) used to fail with an error from Python instead of The Clearing's own message. It now says the
+  file is damaged or isn't a Word document, as it does for other broken files.
+- **The PDF and Word readers are tested against thousands of damaged files.** A new test damages good files in six
+  ways, from flipped bytes to cut-off endings, and fails if either reader does anything but read the file or refuse
+  it with a plain reason, or takes longer than its time limit. The PDF reader passed as it was.
+- **The page file can be rebuilt from this repository.** The shared interface code behind `desktop/plugin.js` now
+  lives in `vendor/hermes-ui-kit`, with esbuild pinned, under the same license as the rest of the plugin.
+  `node scripts/verify-bundle.mjs` rebuilds the file and checks it byte for byte. The rebuild takes in one small fix
+  from the shared code: a palette entry's description may be plain text.
+- **A test fails if a program launch appears in the plugin's code.** The Clearing starts none.
+- **SECURITY.md and issue forms. The listing starts with who The Clearing is for.**
+
+## 0.1.0
+
 Every entry below, including the 0.1.0 section, ships together as version 0.1.0, The Clearing's first public release.
 
 ## Fixes before release, November 10-11, 2026

@@ -1,5 +1,5 @@
 // The Clearing, desktop half. SOURCE: desktop/plugin.js is built from this folder and the shared
-// hermes-ui-kit by `node <hermes-ui-kit>/scripts/build.mjs .` (esbuild), run from the plugin folder.
+// hermes-ui-kit in vendor/ by `node vendor/hermes-ui-kit/scripts/build.mjs .` (esbuild), run from the plugin folder.
 // The built file is one ES module that imports only '@hermes/plugin-sdk', 'react' and 'react/jsx-runtime'.
 //
 // One page, the room (room.jsx). The backend (dashboard/plugin_api.py, reached through ctx.rest) keeps the

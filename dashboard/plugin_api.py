@@ -45,7 +45,7 @@ def _load_package():
 
 store, library, gateway, docx, home, workflows, pdf, intake, dictation, runtime = _load_package()
 _log = logging.getLogger("hermes.plugins.clearing")
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 EDITOR = gateway.Editor()  # PluginLlm is created on first use, inside Hermes
 router = APIRouter()

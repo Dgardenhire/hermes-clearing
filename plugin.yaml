@@ -2,8 +2,8 @@
 manifest_version: 2
 name: clearing
 label: The Clearing
-version: 0.1.0
-description: A writing room for Hermes. Write in a quiet page, run a built-in quick check, and ask your own Hermes model to read your piece. It shows suggested changes right in your page, pinned to your exact words. Click Use this to put a suggestion into your page.
+version: 0.1.1
+description: For anyone who writes something other people will read, from a report or a newsletter to an essay or a book chapter. A writing room for Hermes. Write in a quiet page, run a built-in quick check, and ask your own Hermes model to read your piece. It shows suggested changes right in your page, pinned to your exact words. Click Use this to put a suggestion into your page.
 author: Damon Gardenhire
 license: PolyForm-Shield-1.0.0
 kind: standalone

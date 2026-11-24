@@ -102,7 +102,8 @@ The Clearing is an independent plugin by Damon Gardenhire, not an official Nous 
 ## For developers
 
 - Tests: `/usr/bin/python3 -m unittest discover -s tests` from this folder (the page's JavaScript tests run through `node --test` when node is installed).
-- Desktop bundle: `node <hermes-ui-kit>/scripts/build.mjs .` with a checkout of hermes-ui-kit.
+- Desktop bundle: `node vendor/hermes-ui-kit/scripts/build.mjs .` writes `desktop/plugin.js`, and `node scripts/verify-bundle.mjs` rebuilds it in a temporary folder and exits 0 only if it is byte-identical to the committed file. Use Node 24, and run `npm ci --ignore-scripts --prefix vendor/hermes-ui-kit` once first to install the pinned esbuild. The shared interface code lives in `vendor/hermes-ui-kit`.
+- Security problems: [SECURITY.md](SECURITY.md).
 - The plugin registers one model setting (`clearing_editor`) and one observe-only `post_auxiliary_call` hook, which reads only the finish reason, model name and token counts of its own calls, never prompt or reply text.
 - `dictation.py` imports `tools.voice_mode.transcribe_recording`, which is not in Hermes's public plugin API. The import is guarded: if it fails, dictation falls back to a local faster-whisper model when one is already downloaded, and on that path sets `KMP_DUPLICATE_LIB_OK=TRUE` in the process.
 - What changed: [CHANGELOG](CHANGELOG.md). Manual source: [docs/MANUAL.md](docs/MANUAL.md).
